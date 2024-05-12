@@ -1,0 +1,32 @@
+{
+  "name": "bookmarker-typescript-mvc",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "rm -rf dist && rm -rf .parcel-cache && parcel ./src/pages/*.html --no-cache --no-source-maps",
+    "build": "rm -rf build && rm -rf .parcel-cache && parcel build ./src/pages/*.html --no-cache --no-source-maps --dist-dir build",
+    "start-server": "json-server --watch db.json",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write --ignore-unknown",
+    "prepare": "husky",
+    "commitlint": "commitlint --edit"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
+  },
+  "author": "Hoang Tran",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@eslint/js": "^9.2.0",
+    "eslint": "^9.2.0",
+    "globals": "^15.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "parcel": "^2.12.0",
+    "prettier": "3.2.5",
+    "typescript-eslint": "^7.8.0"
+  }
+}
