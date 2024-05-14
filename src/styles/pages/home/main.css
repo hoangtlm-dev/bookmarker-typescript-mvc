@@ -1,0 +1,20 @@
+/* Base */
+@import url('../../../styles/base/font.css');
+@import url('../../../styles/base/reset.css');
+@import url('../../../styles/base/global.css');
+
+/* Components */
+@import url('../../../styles/components/button.css');
+@import url('../../../styles/components/text.css');
+
+/* Layouts */
+@import url('../../../styles/layouts/common/container.css');
+@import url('../../../styles/layouts/main-header/main-header.css');
+
+/* Sections */
+@import url('../../../styles/pages/home/sections/book-action.css');
+@import url('../../../styles/pages/home/sections/book-list.css');
+
+.content {
+  padding: 32px 0;
+}
