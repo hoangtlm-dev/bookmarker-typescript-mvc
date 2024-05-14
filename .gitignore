@@ -7,3 +7,7 @@
 
 # Cache
 .parcel-cache
+
+# Env
+.env.development
+.env.production
