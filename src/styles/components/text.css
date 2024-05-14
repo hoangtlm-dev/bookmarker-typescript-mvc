@@ -1,0 +1,42 @@
+.text-heading {
+  font-family: var(--font-bold);
+  font-size: var(--md-fs);
+}
+
+.text-sub-heading {
+  font-family: var(--font-bold);
+  font-size: var(--sm-fs);
+}
+
+.text-description {
+  font-family: var(--font-regular);
+  font-size: var(--sm-fs);
+}
+
+.text-dark {
+  color: var(--secondary-color);
+}
+
+.text-light {
+  color: var(--light-color);
+}
+
+.text-error {
+  color: var(--danger-color);
+}
+
+.text-truncate {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-heading.text-truncate {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.text-description.text-truncate {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
