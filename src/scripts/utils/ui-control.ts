@@ -19,8 +19,8 @@ export const createElement = <T extends HTMLElement>(tag: string, classNames?: s
  * @param selector - a string containing a CSS selector to match.
  * @returns the first HTMLElement that matches the selector, or null if no elements match.
  */
-export const getElement = <T extends HTMLElement>(selector: string): T | null => {
-  const element = document.querySelector(selector) as T | null;
+export const getElement = <T extends HTMLElement>(selector: string): T => {
+  const element = document.querySelector(selector) as T;
   return element;
 };
 
@@ -33,4 +33,29 @@ export const getElement = <T extends HTMLElement>(selector: string): T | null =>
 export const getElements = <T extends HTMLElement>(selector: string): NodeListOf<T> => {
   const elements = document.querySelectorAll(selector) as NodeListOf<T>;
   return elements;
+};
+
+/**
+ * Removes existing HTML elements from the DOM
+ *
+ * @param parentElement - HTML element
+ * @param childElementSelector - HTMLElement
+ */
+export const removeDOMElement = (parentElement: HTMLElement, childElement: HTMLElement) => {
+  parentElement.removeChild(childElement);
+};
+
+/**
+ * Removes existing HTML elements from the DOM
+ *
+ * @param parentElement - HTML element
+ * @param childElementSelector - selector of the child element
+ */
+export const removeDOMElementBySelector = (parentElement: HTMLElement, childElementSelector: string) => {
+  const existingElement = getElement(childElementSelector);
+  if (existingElement) parentElement.removeChild(existingElement);
+};
+
+export const updateDOMElement = (parentElement: HTMLElement, childElement: HTMLElement) => {
+  parentElement.appendChild(childElement);
 };
