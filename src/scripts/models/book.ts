@@ -2,7 +2,14 @@
 import { Book } from '@/types';
 
 //Services
-import { addBookService, deleteBookService, editBookService, getBookByIdService, getBooksServices } from '@/services';
+import {
+  addBookService,
+  deleteBookService,
+  editBookService,
+  getBookByIdService,
+  getBooksServices,
+  getImageUrlServices,
+} from '@/services';
 
 export default class BookModel {
   addBook = async (bookData: Book) => {
@@ -26,5 +33,10 @@ export default class BookModel {
 
   deleteBook = async (bookId: number) => {
     await deleteBookService(bookId);
+  };
+
+  getImageUrl = async (fileUpload: FormData) => {
+    const response = await getImageUrlServices(fileUpload);
+    return response;
   };
 }

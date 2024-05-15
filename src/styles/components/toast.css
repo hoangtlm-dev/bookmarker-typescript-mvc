@@ -1,0 +1,27 @@
+.toast-container {
+  padding: 20px;
+  position: fixed;
+  max-width: 288px;
+  right: 16px;
+  bottom: 32px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toast-container.success {
+  background-color: var(--success-color);
+}
+
+.btn-close {
+  position: absolute;
+  top: 24px;
+  right: 20px;
+}
+
+@media (min-width: 576px) {
+  .toast-container {
+    max-width: 512px;
+  }
+}

@@ -27,6 +27,7 @@ export default class BookListController {
   init = async () => {
     await this.displayBookList();
     this.bookListView.bindPageChange(this.handlePageChange);
+    this.bookListView.bindAddBook(this.handleGetImageUrl, this.handleAddBook);
   };
 
   displayBookList = async () => {
@@ -47,5 +48,17 @@ export default class BookListController {
   handlePageChange = (pageNumber: number) => {
     this.currentPage = pageNumber;
     this.updateBookList(this.renderBooks);
+  };
+
+  handleAddBook = async (data: Book) => {
+    const response = await this.bookModel.addBook(data);
+    this.renderBooks.unshift(response);
+    this.originalBooks = [...this.renderBooks];
+    this.updateBookList(this.originalBooks);
+  };
+
+  handleGetImageUrl = async (fileUpload: FormData) => {
+    const response = await this.bookModel.getImageUrl(fileUpload);
+    return response;
   };
 }
