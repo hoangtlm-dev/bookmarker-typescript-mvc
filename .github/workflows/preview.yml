@@ -2,6 +2,9 @@ name: Book Marker Preview Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  BASE_API_URL: ${{ secrets.BASE_API_URL }}
+  IMG_UPLOAD_URL: ${{ secrets.IMG_UPLOAD_URL }}
+  IMG_UPLOAD_KEY: ${{ secrets.IMG_UPLOAD_KEY }}
 on:
   push:
     branches-ignore:
@@ -15,6 +18,11 @@ jobs:
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Set up environment variables
+        run: |
+          echo "BASE_API_URL=${{ secrets.BASE_API_URL }}" >> $GITHUB_ENV
+          echo "IMG_UPLOAD_URL=${{ secrets.IMG_UPLOAD_URL }}" >> $GITHUB_ENV
+          echo "IMG_UPLOAD_KEY=${{ secrets.IMG_UPLOAD_KEY }}" >> $GITHUB_ENV
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
