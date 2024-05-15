@@ -11,3 +11,5 @@
 # Env
 .env.development
 .env.production
+
+.vercel
