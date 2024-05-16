@@ -2,7 +2,14 @@
 import { PAGINATION, TOAST } from '@/constants';
 
 // Types
-import { AddBookHandler, Book, GetImageUrlHandler, PageChangeHandler } from '@/types';
+import {
+  AddBookHandler,
+  Book,
+  DisplayFormHandler,
+  EditBookHandler,
+  GetImageUrlHandler,
+  PageChangeHandler,
+} from '@/types';
 
 // Utils
 import {
@@ -19,7 +26,14 @@ import {
 } from '@/utils';
 
 // Templates
-import { generateBookItem, generateListEmpty, generatePagination, toastTemplate, bookFormTemplate } from '@/templates';
+import {
+  generateBookItem,
+  generateListEmpty,
+  generatePagination,
+  toastTemplate,
+  bookFormTemplate,
+  modalContentTemplate,
+} from '@/templates';
 
 // Icons
 import viewDetailsIcon from '../../assets/icons/left-forward.svg';
@@ -29,7 +43,7 @@ import deleteIcon from '../../assets/icons/trash.svg';
 import { BOOK_FORM } from '@/constants';
 
 // Utils
-import { hideModal, showModal, showToast, modalContentTemplate } from '@/utils';
+import { hideModal, showModal, showToast } from '@/utils';
 
 // Mocks
 import { MOCK_BOOK } from '@/mocks';
@@ -123,9 +137,41 @@ export default class BookListView {
     this.createBtn.addEventListener('click', (event) => {
       event.preventDefault();
 
-      this.showBookForm(MOCK_BOOK, false, getImageUrlHandler, async (data: Partial<Book>) => {
+      this.showBookForm(MOCK_BOOK, false, getImageUrlHandler, async (data: Omit<Book, 'id'>) => {
         addHandler(data);
       });
+    });
+  };
+
+  bindEditBook = (
+    displayFormHandler: DisplayFormHandler,
+    getImageUrlHandler: GetImageUrlHandler,
+    editHandler: EditBookHandler,
+  ) => {
+    this.mainContent.addEventListener('click', async (event) => {
+      const target = event.target as HTMLElement;
+
+      const bookItem = target.closest('.book-item');
+
+      const btnDelete = target.closest('.btn-delete');
+
+      if (btnDelete) {
+        return;
+      }
+
+      if (bookItem) {
+        const bookIdString = bookItem.getAttribute('data-book-id');
+
+        if (bookIdString === null) return;
+
+        const bookId = parseInt(bookIdString);
+
+        const selectedBook = await displayFormHandler(bookId);
+
+        this.showBookForm(selectedBook, true, getImageUrlHandler, async (data: Omit<Book, 'id'>) => {
+          editHandler(bookId, data);
+        });
+      }
     });
   };
 
@@ -133,9 +179,8 @@ export default class BookListView {
     book: Book,
     isEdit: boolean,
     getImageUrlHandler: GetImageUrlHandler,
-    saveCallback: (data: Partial<Book>) => Promise<void>,
+    saveCallback: (input: Omit<Book, 'id'>) => void,
   ) => {
-     
     const formTitle = isEdit ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.name) : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
     const bookForm = bookFormTemplate(book, { formTitle });
     const bookFormContent = modalContentTemplate(bookForm);
@@ -199,7 +244,7 @@ export default class BookListView {
     negativeButton.addEventListener('click', () => hideModal(bookFormModal));
 
     // Handling the 'Save' button click within the form
-     
+
     form.addEventListener('submit', (event) => {
       event.preventDefault();
 
@@ -222,8 +267,8 @@ export default class BookListView {
         publishedDate,
         description,
         imageUrl,
-        createdAt: new Date().getTime().toLocaleString(),
-        updatedAt: new Date().getTime().toLocaleString(),
+        createdAt: new Date().getTime().toString(),
+        updatedAt: new Date().getTime().toString(),
         deletedAt: undefined,
       };
 

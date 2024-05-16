@@ -12,7 +12,7 @@ import {
 } from '@/services';
 
 export default class BookModel {
-  addBook = async (bookData: Book) => {
+  addBook = async (bookData: Omit<Book, 'id'>) => {
     const response = await addBookService(bookData);
     return response;
   };
@@ -27,7 +27,7 @@ export default class BookModel {
     return response;
   };
 
-  editBook = async (bookId: number, bookData: Book) => {
+  editBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
     await editBookService(bookId, bookData);
   };
 

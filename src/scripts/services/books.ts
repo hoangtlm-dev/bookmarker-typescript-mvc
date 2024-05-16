@@ -11,7 +11,7 @@ import { httpRequest } from '@/utils';
 const bookApiUrl = `${process.env.BASE_API_URL}/${API_PATH.BOOKS}`;
 const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${process.env.IMG_UPLOAD_KEY}`;
 
-export const addBookService = async (bookData: Book): Promise<Book> => {
+export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
   return response;
 };
@@ -26,8 +26,12 @@ export const getBookByIdService = async (bookId: number): Promise<Book> => {
   return response;
 };
 
-export const editBookService = async (bookId: number, bookData: Book): Promise<Book> => {
-  const response = await httpRequest<Book, Book>(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.PUT, bookData);
+export const editBookService = async (bookId: number, bookData: Omit<Book, 'id'>): Promise<Book> => {
+  const response = await httpRequest<Omit<Book, 'id'>, Book>(
+    `${bookApiUrl}/${bookId}`,
+    HTTP_REQUEST.METHODS.PUT,
+    bookData,
+  );
   return response;
 };
 
