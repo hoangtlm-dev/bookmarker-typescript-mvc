@@ -28,6 +28,7 @@ export default class BookListController {
     await this.displayBookList();
     this.bookListView.bindPageChange(this.handlePageChange);
     this.bookListView.bindAddBook(this.handleGetImageUrl, this.handleAddBook);
+    this.bookListView.bindEditBook(this.handleGetBookById, this.handleGetImageUrl, this.handleEditBook);
   };
 
   displayBookList = async () => {
@@ -50,7 +51,7 @@ export default class BookListController {
     this.updateBookList(this.renderBooks);
   };
 
-  handleAddBook = async (data: Book) => {
+  handleAddBook = async (data: Omit<Book, 'id'>) => {
     const response = await this.bookModel.addBook(data);
     this.renderBooks.unshift(response);
     this.originalBooks = [...this.renderBooks];
@@ -59,6 +60,16 @@ export default class BookListController {
 
   handleGetImageUrl = async (fileUpload: FormData) => {
     const response = await this.bookModel.getImageUrl(fileUpload);
+    return response ?? '';
+  };
+
+  handleGetBookById = async (bookId: number) => {
+    const response = await this.bookModel.getBookById(bookId);
     return response;
+  };
+
+  handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
+    await this.bookModel.editBook(bookId, bookData);
+    this.displayBookList();
   };
 }
