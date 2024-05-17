@@ -6,9 +6,9 @@ env:
   IMG_UPLOAD_URL: ${{ secrets.IMG_UPLOAD_URL }}
   IMG_UPLOAD_KEY: ${{ secrets.IMG_UPLOAD_KEY }}
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
+    branches:
+      - develop
 jobs:
   Deploy-Preview:
     runs-on: ubuntu-latest
