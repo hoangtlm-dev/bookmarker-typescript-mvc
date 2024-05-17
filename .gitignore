@@ -1,0 +1,15 @@
+# Build & development
+/dist
+/build
+
+# Packages
+/node_modules
+
+# Cache
+.parcel-cache
+
+# Env
+.env.development
+.env.production
+
+.vercel

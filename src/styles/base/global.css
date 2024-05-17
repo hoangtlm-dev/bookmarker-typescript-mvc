@@ -1,0 +1,32 @@
+:root {
+  /* Color */
+  --primary-color: #fabb18;
+  --secondary-color: #000;
+  --light-color: #fff;
+  --light-blur-color: #f4f4f4;
+  --blur-text-color: #d5d5d5;
+  --placeholder-text-color: #b5b5b5;
+  --primary-loading-color: #d9d9d9;
+  --danger-color: #fa4848;
+  --cancel-color: #ccc;
+  --modal-background-color: #65656591;
+  --success-color: #6ac83c8a;
+  --fail-color: #c83c3c8a;
+
+  /* Font family */
+  --font-bold: Lato-Bold, sans-serif;
+  --font-regular: Lato-Regular, sans-serif;
+
+  /* Font size */
+  --sm-fs: 16px;
+  --md-fs: 20px;
+  --lg-fs: 32px;
+  --xl-fs: 36px;
+
+  /* Border radius */
+  --xxs-border-radius: 8px;
+  --xs-border-radius: 10px;
+  --sm-border-radius: 15px;
+  --md-border-radius: 20px;
+  --lg-border-radius: 30px;
+}

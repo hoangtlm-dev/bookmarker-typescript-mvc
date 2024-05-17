@@ -1,0 +1,33 @@
+.btn {
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.6;
+}
+
+.btn-square {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--xs-border-radius);
+}
+
+.btn-rectangle {
+  border-radius: var(--md-border-radius);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+}
+
+.btn-cancel {
+  background-color: var(--cancel-color);
+}

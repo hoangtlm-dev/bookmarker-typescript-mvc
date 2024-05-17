@@ -1,0 +1,157 @@
+.book-form {
+  width: 100%;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-radius: var(--sm-border-radius);
+  background-color: var(--light-color);
+}
+
+.book-form .form-heading {
+  text-align: center;
+}
+
+.book-form .form-content {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+}
+
+.book-form .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.book-form .input-box {
+  padding: 16px;
+  background-color: var(--light-blur-color);
+  border: none;
+  border-radius: var(--md-border-radius);
+}
+
+.book-form .input-box,
+.book-form .input-box::placeholder,
+.book-form .input-box[type="date"] {
+  font-family: var(--font-regular);
+  color: var(--light-blur-text-color);
+}
+
+.book-form .input-box::-webkit-calendar-picker-indicator {
+  background-image: url("../../assets/icons/calendar.svg");
+  background-position: center;
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+}
+
+.book-form .book-published-date .input-box,
+.book-form .input-group.book-image {
+  position: relative;
+}
+
+.book-form .book-img-preview {
+  width: 95px;
+  height: 116px;
+}
+
+.book-form .book-img-preview[src=""] {
+  display: none;
+}
+
+.book-form .btn-upload {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: var(--md-border-radius);
+  cursor: pointer;
+}
+
+.book-form .upload-text {
+  font-size: var(--sm-fs);
+}
+
+.book-form .btn-upload:hover {
+  opacity: 0.8;
+}
+
+.book-form .book-image .input-box {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.book-form .book-description .input-box {
+  height: 120px;
+}
+
+.book-form .form-action {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.book-form .btn-action {
+  padding: 8px 12px;
+  min-width: 120px;
+  border-radius: var(--md-border-radius);
+  text-align: center;
+}
+
+.book-form .book-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.book-form .error-message {
+  min-height: 20px;
+}
+
+@media (min-width: 576px) {
+  .book-form {
+    width: unset;
+  }
+
+  .book-form .form-content {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 24px;
+  }
+
+  .book-form .btn-action {
+    padding: 12px 16px;
+    min-width: 160px;
+  }
+
+  .book-form .input-group.book-description {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+}
+@media (min-width: 992px) {
+  .book-form {
+    min-width: 800px;
+  }
+
+  .book-form .btn-upload {
+    width: 50%;
+  }
+
+  .book-form .btn-action {
+    min-width: 160px;
+    padding: 12px 16px;
+  }
+}
