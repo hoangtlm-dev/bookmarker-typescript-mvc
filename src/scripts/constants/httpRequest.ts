@@ -10,4 +10,4 @@ export const HTTP_REQUEST = {
     PATCH: 'PATCH',
     DELETE: 'DELETE',
   },
-};
+} as const;

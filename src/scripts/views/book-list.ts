@@ -1,5 +1,5 @@
 // Constants
-import { PAGINATION, TOAST } from '@/constants';
+import { PAGINATION } from '@/constants';
 
 // Types
 import {
@@ -13,27 +13,22 @@ import {
 
 // Utils
 import {
-  ValidationField,
-  appendErrorMessage,
+  createBookFormModal,
+  createBookFormTitle,
   createElement,
   getElement,
   getElements,
+  handleFileInputChange,
+  handleFormSubmit,
+  handleInputValidation,
+  handleNegativeButtonClick,
   removeDOMElement,
   removeDOMElementBySelector,
   updateDOMElement,
-  validateField,
-  validateForm,
 } from '@/utils';
 
 // Templates
-import {
-  generateBookItem,
-  generateListEmpty,
-  generatePagination,
-  toastTemplate,
-  bookFormTemplate,
-  modalContentTemplate,
-} from '@/templates';
+import { generateBookItem, generateListEmpty, generatePagination } from '@/templates';
 
 // Icons
 import viewDetailsIcon from '../../assets/icons/left-forward.svg';
@@ -41,9 +36,6 @@ import deleteIcon from '../../assets/icons/trash.svg';
 
 // Constants
 import { BOOK_FORM } from '@/constants';
-
-// Utils
-import { hideModal, showModal, showToast } from '@/utils';
 
 // Mocks
 import { MOCK_BOOK } from '@/mocks';
@@ -181,140 +173,41 @@ export default class BookListView {
     getImageUrlHandler: GetImageUrlHandler,
     saveCallback: (input: Omit<Book, 'id'>) => void,
   ) => {
-    const formTitle = isEdit ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.name) : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
-    const bookForm = bookFormTemplate(book, { formTitle });
-    const bookFormContent = modalContentTemplate(bookForm);
-    const bookFormModal = createElement('div', 'modal');
+    const formTitle = createBookFormTitle(book, isEdit);
+    const bookFormModal = createBookFormModal(book, formTitle);
 
-    showModal(bookFormModal, bookFormContent);
     this.mainContent.appendChild(bookFormModal);
 
-    // Get form element
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
     const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
-
-    // Get image url
-    let imageUrl = book.imageUrl || '';
-
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
-
-    fileInput.addEventListener('change', async (event) => {
-      positiveButton.disabled = true;
-      const target = event.target as HTMLInputElement;
-
-      if (target.files === null) return;
-
-      const file = target.files[0];
-
-      bookNamePreview.innerHTML = `Selected: ${file.name}`;
-      bookImgPreview.src = URL.createObjectURL(file);
-      const oldBookImgStyle = bookImgPreview.getAttribute('style') ?? '';
-      const newBookImgStyle = oldBookImgStyle + 'width: 96px; height: 116px';
-      bookImgPreview.setAttribute('style', newBookImgStyle);
-
-      const oldUploadBtnStyle = uploadBtn.getAttribute('style') ?? '';
-      const newUploadBtnStyle = oldUploadBtnStyle + 'opacity: 0';
-      uploadBtn.setAttribute('style', newUploadBtnStyle);
-
-      const formData = new FormData();
-      formData.append('image', file);
-
-      imageUrl = await getImageUrlHandler(formData);
-
-      positiveButton.disabled = false;
-    });
-
-    // Handling form inputs for validation
-    inputElements.forEach((input) => {
-      input.addEventListener('input', () => {
-        const validateFieldName = input.getAttribute('data-field-validate');
-
-        const inputField = input.getAttribute('data-field-name') as ValidationField;
-
-        if (validateFieldName !== null) validateField(input, inputField, input.value, validateFieldName);
-      });
-    });
-
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
 
-    negativeButton.addEventListener('click', () => hideModal(bookFormModal));
+    let imageUrl = book.imageUrl || '';
 
-    // Handling the 'Save' button click within the form
+    const setImageUrl = (url: string) => {
+      imageUrl = url;
+    };
 
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
+    const getImageUrl = () => {
+      return imageUrl;
+    };
 
-      // Use FormData to retrieve form data
-      const formData = new FormData(form);
-      if (formData === null) return;
-
-      const name = formData.get('book-name') as string;
-      const authors = formData.get('book-authors') as string;
-
-      if (authors === null) return;
-      const authorList = authors.split(',').map((author) => author.trim());
-
-      const publishedDate = formData.get('book-published-date') as string;
-      const description = formData.get('book-description') as string;
-
-      const data: Omit<Book, 'id'> = {
-        name,
-        authors: authorList,
-        publishedDate,
-        description,
-        imageUrl,
-        createdAt: new Date().getTime().toString(),
-        updatedAt: new Date().getTime().toString(),
-        deletedAt: undefined,
-      };
-
-      // validate all fields before submitting
-      let isFormValid = true;
-
-      inputElements.forEach((input) => {
-        let validateValue = '';
-
-        if (input.type === 'file') {
-          validateValue = imageUrl;
-        } else {
-          validateValue = input.value;
-        }
-
-        const inputField = input.getAttribute('data-field-name') as ValidationField;
-
-        const errorField = input.getAttribute('data-field-validate') as string;
-
-        const error = validateForm(inputField, validateValue, errorField);
-
-        if (error) {
-          isFormValid = false;
-          appendErrorMessage(input, error);
-        }
-      });
-
-      // Stop execution if the form is not valid
-      if (!isFormValid) {
-        return;
-      }
-
-      saveCallback(data);
-
-      // Remove the modal from the DOM
-      hideModal(bookFormModal);
-
-      // Show the toast message
-      const toastContainer = createElement('div', 'toast-container');
-      showToast(
-        toastContainer,
-        toastTemplate(TOAST.MESSAGE.SUCCESS, isEdit ? TOAST.DESCRIPTION.EDITED_BOOK : TOAST.DESCRIPTION.ADDED_BOOK),
-        TOAST.DISPLAY_TIME,
-      );
-
-      this.mainContent.appendChild(toastContainer);
-    });
+    handleFileInputChange(
+      fileInput,
+      bookNamePreview,
+      bookImgPreview,
+      uploadBtn,
+      positiveButton,
+      getImageUrlHandler,
+      setImageUrl,
+    );
+    handleInputValidation(inputElements);
+    handleNegativeButtonClick(negativeButton, bookFormModal);
+    handleFormSubmit(form, inputElements, getImageUrl, isEdit, saveCallback, bookFormModal, this.mainContent);
   };
 }

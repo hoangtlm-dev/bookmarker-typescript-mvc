@@ -4,3 +4,4 @@ export * from './time-control';
 export * from './validation';
 export * from './modal-control';
 export * from './toast-control';
+export * from './book-form-control';
