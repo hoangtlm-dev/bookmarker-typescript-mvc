@@ -25,6 +25,7 @@ import {
   removeDOMElement,
   removeDOMElementBySelector,
   updateDOMElement,
+  validateField,
 } from '@/utils';
 
 // Templates
@@ -38,7 +39,7 @@ import deleteIcon from '../../assets/icons/trash.svg';
 import { BOOK_FORM } from '@/constants';
 
 // Mocks
-import { MOCK_BOOK } from '@/mocks';
+import { MOCK_BOOK, TEST_BOOKS } from '@/mocks';
 
 export default class BookListView {
   private mainContent: HTMLDivElement;
@@ -113,6 +114,20 @@ export default class BookListView {
     }
   };
 
+  displayRecommendationBooks = (bookListWrapper: HTMLUListElement, books: Book[]): void => {
+    while (bookListWrapper.firstChild) {
+      bookListWrapper.removeChild(bookListWrapper.firstChild);
+    }
+
+    if (books.length > 0) {
+      books.forEach((book) => {
+        const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
+        recommendBookItem.textContent = book.name;
+        bookListWrapper.appendChild(recommendBookItem);
+      });
+    }
+  };
+
   bindPageChange(handler: PageChangeHandler) {
     this.mainContent.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
@@ -180,12 +195,27 @@ export default class BookListView {
 
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
+    const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
+    const nameInput = getElement<HTMLInputElement>('.input-box[name="book-name"]');
     const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
+
+    const booksRecommendation = createElement<HTMLUListElement>('ul', 'book-recommendation-list');
+    nameInputGroup.appendChild(booksRecommendation);
+
+    nameInput.addEventListener('input', () => {
+      const query = nameInput.value.trim().toLowerCase();
+      const filteredBooks = TEST_BOOKS.filter((book) => book.name.toLowerCase().includes(query));
+      this.displayRecommendationBooks(booksRecommendation, filteredBooks);
+    });
+
+    nameInput.addEventListener('blur', () => {
+      validateField(nameInput, 'name', nameInput.value, 'Book Name');
+    });
 
     let imageUrl = book.imageUrl || '';
 
