@@ -31,7 +31,7 @@ import {
 import { generateBookItem, generateListEmpty, generatePagination, generateSkeletonBookItem } from '@/templates';
 
 // Icons
-import viewDetailsIcon from '../../assets/icons/left-forward.svg';
+import viewDetailsIcon from '../../assets/icons/right-forward.svg';
 import deleteIcon from '../../assets/icons/trash.svg';
 
 // Constants
@@ -60,11 +60,11 @@ export default class BookListView {
   }
 
   displaySkeletonBooks = (count: number) => {
-    for (let i = 0; i < count; i++) {
+    Array.from({ length: count }).forEach(() => {
       const skeletonBookItem = createElement('li', 'skeleton-book-item');
       skeletonBookItem.innerHTML = generateSkeletonBookItem();
       updateDOMElement(this.bookList, skeletonBookItem);
-    }
+    });
   };
 
   displayBooks = (bookList: Book[], booksShow: Book[], currentPage: number) => {

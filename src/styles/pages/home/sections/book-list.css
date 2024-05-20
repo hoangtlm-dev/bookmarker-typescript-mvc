@@ -8,8 +8,7 @@
   gap: 20px;
 }
 
-.book-list .book-item,
-.skeleton-book-item {
+.book-list .book-item {
   display: flex;
   justify-content: space-between;
   background-color: var(--primary-color);
@@ -57,85 +56,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-/* Skeleton loading */
-.skeleton-book-item {
-  background-color: #f4f4f4;
-}
-
-.skeleton-book-item .book-primary-info {
-  flex: 0 0 60%;
-}
-
-.skeleton-book-item .book-name,
-.skeleton-book-item .book-description,
-.skeleton-book-item .book-item-action-btn,
-.skeleton-book-item .book-published-time,
-.skeleton-book-item .book-published-image-frame,
-.skeleton-book-item .btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.skeleton-book-item .book-name::before,
-.skeleton-book-item .book-description::before,
-.skeleton-book-item .book-item-action-btn::before,
-.skeleton-book-item .book-published-time::before,
-.skeleton-book-item .book-published-image-frame::before,
-.skeleton-book-item .btn::before {
-  background-color: var(--primary-loading-color);
-  content: '';
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.skeleton-book-item .book-name::after,
-.skeleton-book-item .book-description::after,
-.skeleton-book-item .book-item-action-btn::after,
-.skeleton-book-item .book-published-time::after,
-.skeleton-book-item .book-published-image-frame::after,
-.skeleton-book-item .btn::after {
-  content: '';
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to right, var(--primary-loading-color), #fff 50%, var(--primary-loading-color));
-  animation: skeletonLoading 2s infinite alternate;
-}
-
-.skeleton-book-item .book-name,
-.skeleton-book-item .book-published-time {
-  width: 100%;
-  height: 26px;
-}
-
-.skeleton-book-item .book-description {
-  width: 100%;
-  height: 48px;
-}
-
-.skeleton-book-item .btn {
-  width: 48px;
-  height: 48px;
-}
-
-@keyframes skeletonLoading {
-  from {
-    left: -50%;
-  }
-  to {
-    left: 50%;
-  }
 }
 
 @media (min-width: 768px) {

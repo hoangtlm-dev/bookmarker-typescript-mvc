@@ -6,6 +6,7 @@
 /* Components */
 @import url('../../../styles/components/button.css');
 @import url('../../../styles/components/text.css');
+@import url('../../../styles/components/skeleton-book-item.css');
 @import url('../../../styles/components/pagination.css');
 @import url('../../../styles/components/modal.css');
 @import url('../../../styles/components/book-form.css');
