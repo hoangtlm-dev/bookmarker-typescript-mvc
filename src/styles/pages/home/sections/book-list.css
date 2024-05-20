@@ -8,7 +8,8 @@
   gap: 20px;
 }
 
-.book-list .book-item {
+.book-list .book-item,
+.skeleton-book-item {
   display: flex;
   justify-content: space-between;
   background-color: var(--primary-color);
@@ -59,30 +60,30 @@
 }
 
 /* Skeleton loading */
-.book-item.loading {
+.skeleton-book-item {
   background-color: #f4f4f4;
 }
 
-.book-item.loading .book-primary-info {
+.skeleton-book-item .book-primary-info {
   flex: 0 0 60%;
 }
 
-.book-item.loading .book-name,
-.book-item.loading .book-description,
-.book-item.loading .book-item-action-btn,
-.book-item.loading .book-published-time,
-.book-item.loading .book-published-image-frame,
-.book-item.loading .btn {
+.skeleton-book-item .book-name,
+.skeleton-book-item .book-description,
+.skeleton-book-item .book-item-action-btn,
+.skeleton-book-item .book-published-time,
+.skeleton-book-item .book-published-image-frame,
+.skeleton-book-item .btn {
   position: relative;
   overflow: hidden;
 }
 
-.book-item.loading .book-name::before,
-.book-item.loading .book-description::before,
-.book-item.loading .book-item-action-btn::before,
-.book-item.loading .book-published-time::before,
-.book-item.loading .book-published-image-frame::before,
-.book-item.loading .btn::before {
+.skeleton-book-item .book-name::before,
+.skeleton-book-item .book-description::before,
+.skeleton-book-item .book-item-action-btn::before,
+.skeleton-book-item .book-published-time::before,
+.skeleton-book-item .book-published-image-frame::before,
+.skeleton-book-item .btn::before {
   background-color: var(--primary-loading-color);
   content: '';
   width: 100%;
@@ -94,12 +95,12 @@
   bottom: 0;
 }
 
-.book-item.loading .book-name::after,
-.book-item.loading .book-description::after,
-.book-item.loading .book-item-action-btn::after,
-.book-item.loading .book-published-time::after,
-.book-item.loading .book-published-image-frame::after,
-.book-item.loading .btn::after {
+.skeleton-book-item .book-name::after,
+.skeleton-book-item .book-description::after,
+.skeleton-book-item .book-item-action-btn::after,
+.skeleton-book-item .book-published-time::after,
+.skeleton-book-item .book-published-image-frame::after,
+.skeleton-book-item .btn::after {
   content: '';
   width: 100%;
   height: 100%;
@@ -112,18 +113,18 @@
   animation: skeletonLoading 2s infinite alternate;
 }
 
-.book-item.loading .book-name,
-.book-item.loading .book-published-time {
+.skeleton-book-item .book-name,
+.skeleton-book-item .book-published-time {
   width: 100%;
   height: 26px;
 }
 
-.book-item.loading .book-description {
+.skeleton-book-item .book-description {
   width: 100%;
   height: 48px;
 }
 
-.book-item.loading .btn {
+.skeleton-book-item .btn {
   width: 48px;
   height: 48px;
 }

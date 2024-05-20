@@ -28,7 +28,7 @@ import {
 } from '@/utils';
 
 // Templates
-import { generateBookItem, generateListEmpty, generatePagination } from '@/templates';
+import { generateBookItem, generateListEmpty, generatePagination, generateSkeletonBookItem } from '@/templates';
 
 // Icons
 import viewDetailsIcon from '../../assets/icons/left-forward.svg';
@@ -61,8 +61,8 @@ export default class BookListView {
 
   displaySkeletonBooks = (count: number) => {
     for (let i = 0; i < count; i++) {
-      const skeletonBookItem = createElement('li', 'book-item loading');
-      skeletonBookItem.innerHTML = generateBookItem();
+      const skeletonBookItem = createElement('li', 'skeleton-book-item');
+      skeletonBookItem.innerHTML = generateSkeletonBookItem();
       updateDOMElement(this.bookList, skeletonBookItem);
     }
   };
