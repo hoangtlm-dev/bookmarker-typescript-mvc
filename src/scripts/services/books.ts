@@ -40,10 +40,6 @@ export const deleteBookService = async (bookId: number): Promise<void> => {
 };
 
 export const getImageUrlServices = async (formData: FormData) => {
-  try {
-    const response = await httpRequest<FormData, ImgBBApiResponse>(uploadImageUrl, 'POST', formData);
-    return response.data.url;
-  } catch (error) {
-    if (error instanceof Error) throw new Error(error.message);
-  }
+  const response = await httpRequest<FormData, ImgBBApiResponse>(uploadImageUrl, HTTP_REQUEST.METHODS.POST, formData);
+  return response.data.url;
 };
