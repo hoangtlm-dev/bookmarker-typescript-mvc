@@ -1,11 +1,12 @@
 // Constants
-import { PAGINATION } from '@/constants';
+import { PAGINATION, SORT } from '@/constants';
 
 //Types
 import { Book } from '@/types';
 
 import BookModel from '@/models/book';
 import BookListView from '@/views/book-list';
+import { sortArray } from '@/utils/sort-array';
 
 export default class BookListController {
   private bookModel: BookModel;
@@ -35,6 +36,7 @@ export default class BookListController {
       this.handleEditBook,
     );
     this.bookListView.bindSearchInputChange(this.handleSearchBook);
+    this.bookListView.bindSortBook(this.handleSortBookByTitle);
   };
 
   displayBookList = async () => {
@@ -85,6 +87,25 @@ export default class BookListController {
     const filteredBooks = this.renderBooks.filter((book) => book.title.toLowerCase().includes(searchTerm));
 
     this.updateBookList(filteredBooks);
+  };
+
+  handleSortBookByTitle = (sortStatus: string) => {
+    switch (sortStatus) {
+      case SORT.STATUS.ASCENDING: {
+        const ascSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.ASCENDING);
+        this.renderBooks = [...ascSortedBooks];
+        break;
+      }
+      case SORT.STATUS.DESCENDING: {
+        const descSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.DESCENDING);
+        this.renderBooks = [...descSortedBooks];
+        break;
+      }
+      default:
+        this.renderBooks = [...this.originalBooks];
+    }
+
+    this.updateBookList(this.renderBooks);
   };
 
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {

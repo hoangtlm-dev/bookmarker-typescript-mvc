@@ -1,5 +1,5 @@
 // Constants
-import { DEBOUNCE, PAGINATION } from '@/constants';
+import { DEBOUNCE, PAGINATION, SORT } from '@/constants';
 
 // Types
 import {
@@ -12,6 +12,7 @@ import {
   PageChangeHandler,
   RecommendBook,
   SearchBookHandler,
+  SortBookHandler,
 } from '@/types';
 
 // Utils
@@ -147,6 +148,46 @@ export default class BookListView {
           handler(pageNumber);
         }
       }
+    });
+  }
+
+  toggleSortStatus(target: HTMLElement) {
+    const isAscending = target.classList.contains('asc');
+    const isDescending = target.classList.contains('desc');
+    const oppositeClass = isAscending ? 'desc' : 'asc';
+
+    let newStatus = '';
+
+    if (isAscending) {
+      newStatus = SORT.STATUS.ASCENDING;
+    } else if (isDescending) {
+      newStatus = SORT.STATUS.DESCENDING;
+    }
+
+    // Remove 'active' class from the opposite sort button if it exists
+    const oppositeButton = (target.parentElement as HTMLElement).querySelector(`.${oppositeClass}`);
+    if (oppositeButton) {
+      oppositeButton.classList.remove('active');
+    }
+
+    // Toggle the current sort status and the 'active' class on the current button
+    if (newStatus === this.sortStatus) {
+      // If the current status matches the new, reset to default and remove 'active'
+      this.sortStatus = '';
+      target.classList.remove('active');
+    } else {
+      // Otherwise, update to the new status and add 'active'
+      this.sortStatus = newStatus;
+      target.classList.add('active');
+    }
+  }
+
+  bindSortBook(handler: SortBookHandler) {
+    this.sortBtns.forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        this.toggleSortStatus(event.target as HTMLElement);
+        handler(this.sortStatus);
+      });
     });
   }
 
