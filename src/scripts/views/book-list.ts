@@ -128,14 +128,13 @@ export default class BookListView {
           const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
           recommendBookItem.textContent = book.title;
           bookListWrapper.appendChild(recommendBookItem);
-          bookListWrapper.style.display = 'block';
         }
       });
     }
   };
 
   hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
-    bookListWrapper.style.display = 'none';
+    bookListWrapper.remove();
   };
 
   bindPageChange(handler: PageChangeHandler) {
@@ -231,25 +230,33 @@ export default class BookListView {
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
-
-    const booksRecommendation = createElement<HTMLUListElement>('ul', 'book-recommendation-list');
-    nameInputGroup.appendChild(booksRecommendation);
+    const booksRecommendation =
+      getElement<HTMLUListElement>('.book-recommendation-list') ||
+      createElement<HTMLUListElement>('ul', 'book-recommendation-list');
 
     nameInput.addEventListener(
       'input',
       debounce(async (event: Event) => {
         const target = event.target as HTMLInputElement;
         const query = target.value.trim();
+
         if (query) {
           const recommendBooks = await getRecommendBookHandler(query);
           this.displayRecommendationBooks(booksRecommendation, recommendBooks);
+          if (!booksRecommendation.parentElement) {
+            updateDOMElement(nameInputGroup, booksRecommendation);
+          }
+        } else {
+          if (booksRecommendation.parentElement) {
+            this.hideRecommendationBooks(booksRecommendation);
+          }
         }
       }, 500),
     );
 
     nameInput.addEventListener('blur', () => {
-      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
       this.hideRecommendationBooks(booksRecommendation);
+      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
     });
 
     let imageUrl = book.imageUrl;
