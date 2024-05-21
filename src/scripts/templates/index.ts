@@ -6,3 +6,5 @@ export * from './book-form';
 export * from './toast';
 export * from './modal-content';
 export * from './confirm-dialog';
+export * from './book-details';
+export * from './skeleton-book-details';
