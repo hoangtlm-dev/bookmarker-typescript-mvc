@@ -1,0 +1,42 @@
+.confirm-dialog {
+  padding: 32px;
+  background-color: var(--light-color);
+  border-radius: 20px;
+}
+
+.confirm-dialog .confirm-dialog-heading,
+.confirm-dialog .confirm-dialog-description,
+.confirm-dialog .confirm-dialog-btn {
+  text-align: center;
+}
+
+.confirm-dialog .confirm-dialog-description {
+  font-size: var(--sm-fs);
+  color: var(--light-blur-text-color);
+  margin-top: 16px;
+}
+
+.confirm-dialog .confirm-dialog-action {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.confirm-dialog .btn-action {
+  padding: 8px 12px;
+  min-width: 120px;
+  border-radius: var(--md-border-radius);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .confirm-dialog .confirm-dialog-heading {
+    font-size: var(--lg-fs);
+  }
+
+  .confirm-dialog .confirm-dialog-description {
+    font-size: var(--md-fs);
+  }
+}

@@ -11,6 +11,7 @@
 @import url('../../../styles/components/modal.css');
 @import url('../../../styles/components/book-form.css');
 @import url('../../../styles/components/toast.css');
+@import url('../../../styles/components/confirm-dialog.css');
 
 /* Layouts */
 @import url('../../../styles/layouts/common/container.css');

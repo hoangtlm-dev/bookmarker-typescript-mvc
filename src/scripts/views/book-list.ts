@@ -1,10 +1,11 @@
 // Constants
-import { DEBOUNCE, PAGINATION, SORT } from '@/constants';
+import { DEBOUNCE, PAGINATION, SORT, TOAST } from '@/constants';
 
 // Types
 import {
   AddBookHandler,
   Book,
+  DeleteBookHandler,
   DisplayFormHandler,
   EditBookHandler,
   GetImageUrlHandler,
@@ -27,21 +28,32 @@ import {
   handleFormSubmit,
   handleInputValidation,
   handleNegativeButtonClick,
+  hideModal,
   removeDOMElement,
   removeDOMElementBySelector,
+  showModal,
+  showToast,
   updateDOMElement,
   validateField,
 } from '@/utils';
 
 // Templates
-import { generateBookItem, generateListEmpty, generatePagination, generateSkeletonBookItem } from '@/templates';
+import {
+  generateBookItem,
+  generateConfirmDialog,
+  generateListEmpty,
+  generatePagination,
+  generateSkeletonBookItem,
+  modalContentTemplate,
+  toastTemplate,
+} from '@/templates';
 
 // Icons
 import viewDetailsIcon from '../../assets/icons/right-forward.svg';
 import deleteIcon from '../../assets/icons/trash.svg';
 
 // Constants
-import { BOOK_FORM } from '@/constants';
+import { BOOK_FORM, CONFIRM_DIALOG } from '@/constants';
 
 // Mocks
 import { MOCK_BOOK } from '@/mocks';
@@ -333,4 +345,59 @@ export default class BookListView {
     handleNegativeButtonClick(negativeButton, bookFormModal);
     handleFormSubmit(form, inputElements, getImageUrl, isEdit, saveCallback, bookFormModal, this.mainContent);
   };
+
+  bindDeleteBook(handler: DeleteBookHandler) {
+    this.mainContent.addEventListener('click', (event) => {
+      const btnDelete = (event.target as HTMLElement).closest('.btn-delete');
+
+      if (btnDelete) {
+        event.stopPropagation();
+        const bookItem = (event.target as HTMLElement).closest('.book-item')!;
+        const bookId = parseInt(bookItem.getAttribute('data-book-id') as string, 10);
+
+        // Create and show the confirm dialog
+        const confirmDialogOptions = {
+          positiveButtonId: CONFIRM_DIALOG.POSITIVE_BUTTON_ID,
+          negativeButtonId: CONFIRM_DIALOG.NEGATIVE_BUTTON_ID,
+          positiveText: CONFIRM_DIALOG.POSITIVE_TEXT,
+          negativeText: CONFIRM_DIALOG.NEGATIVE_TEXT,
+        };
+        const confirmDialog = generateConfirmDialog(
+          CONFIRM_DIALOG.MESSAGE.DELETE_BOOK,
+          CONFIRM_DIALOG.DESCRIPTION,
+          confirmDialogOptions,
+        );
+        const confirmModalContent = modalContentTemplate(confirmDialog);
+        const confirmModal = createElement('div', 'modal');
+        showModal(confirmModal, confirmModalContent);
+        this.mainContent.appendChild(confirmModal);
+
+        // Get the positive and negative buttons from the modal
+        const positiveButton = getElement(`#${CONFIRM_DIALOG.POSITIVE_BUTTON_ID}`);
+        const negativeButton = getElement(`#${CONFIRM_DIALOG.NEGATIVE_BUTTON_ID}`);
+
+        // Handling the 'OK' button click
+        positiveButton.addEventListener('click', () => {
+          handler(bookId);
+          // Remove the modal from the DOM
+          this.mainContent.removeChild(confirmModal);
+
+          // Show the toast message
+          const toastContainer = createElement('div', 'toast-container');
+          showToast(
+            toastContainer,
+            toastTemplate(TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.DELETED_BOOK),
+            TOAST.DISPLAY_TIME,
+          );
+
+          this.mainContent.appendChild(toastContainer);
+        });
+
+        // Handling the 'Cancel' button click
+        negativeButton.addEventListener('click', () => {
+          hideModal(confirmModal);
+        });
+      }
+    });
+  }
 }

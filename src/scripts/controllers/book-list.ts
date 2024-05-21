@@ -37,6 +37,7 @@ export default class BookListController {
     );
     this.bookListView.bindSearchInputChange(this.handleSearchBook);
     this.bookListView.bindSortBook(this.handleSortBookByTitle);
+    this.bookListView.bindDeleteBook(this.handleDeleteBook);
   };
 
   displayBookList = async () => {
@@ -111,5 +112,21 @@ export default class BookListController {
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
     await this.bookModel.editBook(bookId, bookData);
     this.displayBookList();
+  };
+
+  handleDeleteBook = async (bookId: number) => {
+    await this.bookModel.deleteBook(bookId);
+    // Refresh the book list from the model
+    this.renderBooks = await this.bookModel.getBooks();
+    this.originalBooks = [...this.renderBooks];
+
+    // Move back one page if the current page has no items
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    if (startIndex >= this.renderBooks.length && this.currentPage > 1) {
+      this.currentPage--;
+    }
+
+    // Update the view with the new list of books
+    this.updateBookList(this.renderBooks);
   };
 }

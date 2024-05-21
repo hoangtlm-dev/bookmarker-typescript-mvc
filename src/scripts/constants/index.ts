@@ -6,3 +6,4 @@ export * from './book-form';
 export * from './toast';
 export * from './debounce';
 export * from './sort';
+export * from './confirm-dialog';
