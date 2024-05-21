@@ -15,3 +15,5 @@ export type GetRecomendBookHandler = (query: string) => Promise<RecommendBook[]>
 export type SearchBookHandler = (keyword: string) => void;
 
 export type SortBookHandler = (sortStatus: string) => void;
+
+export type DeleteBookHandler = (bookId: number) => void;
