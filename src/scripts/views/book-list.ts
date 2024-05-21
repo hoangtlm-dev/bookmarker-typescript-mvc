@@ -1,5 +1,5 @@
 // Constants
-import { PAGINATION } from '@/constants';
+import { DEBOUNCE, PAGINATION } from '@/constants';
 
 // Types
 import {
@@ -11,6 +11,7 @@ import {
   GetRecomendBookHandler,
   PageChangeHandler,
   RecommendBook,
+  SearchBookHandler,
 } from '@/types';
 
 // Utils
@@ -146,6 +147,15 @@ export default class BookListView {
           handler(pageNumber);
         }
       }
+    });
+  }
+
+  bindSearchInputChange(handler: SearchBookHandler) {
+    const debouncedHandler = debounce(handler, DEBOUNCE.DELAY_TIME);
+
+    this.searchBox.addEventListener('input', (event) => {
+      const target = event.target as HTMLInputElement;
+      debouncedHandler(target.value);
     });
   }
 

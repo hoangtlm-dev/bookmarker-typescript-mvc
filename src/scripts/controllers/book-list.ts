@@ -2,7 +2,7 @@
 import { PAGINATION } from '@/constants';
 
 //Types
-import { Book, RecommendBook } from '@/types';
+import { Book } from '@/types';
 
 import BookModel from '@/models/book';
 import BookListView from '@/views/book-list';
@@ -14,7 +14,6 @@ export default class BookListController {
   private renderBooks: Book[];
   private currentPage: number;
   private itemsPerPage: number;
-  private recommendBooks: RecommendBook[];
 
   constructor(bookModel: BookModel, bookListView: BookListView) {
     this.bookModel = bookModel;
@@ -23,7 +22,6 @@ export default class BookListController {
     this.renderBooks = [];
     this.currentPage = 1;
     this.itemsPerPage = PAGINATION.ITEMS_PER_PAGE;
-    this.recommendBooks = [];
   }
 
   init = async () => {
@@ -36,6 +34,7 @@ export default class BookListController {
       this.handleGetRecommendBooks,
       this.handleEditBook,
     );
+    this.bookListView.bindSearchInputChange(this.handleSearchBook);
   };
 
   displayBookList = async () => {
@@ -78,6 +77,14 @@ export default class BookListController {
   handleGetBookById = async (bookId: number) => {
     const response = await this.bookModel.getBookById(bookId);
     return response;
+  };
+
+  handleSearchBook = (keyword: string) => {
+    const searchTerm = keyword.trim().toLowerCase();
+
+    const filteredBooks = this.renderBooks.filter((book) => book.title.toLowerCase().includes(searchTerm));
+
+    this.updateBookList(filteredBooks);
   };
 
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {

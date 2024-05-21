@@ -11,3 +11,5 @@ export type DisplayFormHandler = (bookId: number) => Promise<Book>;
 export type EditBookHandler = (bookId: number, data: Omit<Book, 'id'>) => void;
 
 export type GetRecomendBookHandler = (query: string) => Promise<RecommendBook[]>;
+
+export type SearchBookHandler = (keyword: string) => void;
