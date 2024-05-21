@@ -21,7 +21,7 @@ import {
 } from '@/utils';
 
 export const createBookFormTitle = (book: Book, isEdit: boolean) => {
-  return isEdit ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.name) : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
+  return isEdit ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.title) : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
 };
 
 export const createBookFormModal = (book: Book, formTitle: string) => {
@@ -91,7 +91,7 @@ export const handleFormSubmit = (
     const formData = new FormData(form);
     if (formData === null) return;
 
-    const name = formData.get('book-name') as string;
+    const title = formData.get('book-name') as string;
     const authors = formData.get('book-authors') as string;
     if (authors === null) return;
     const authorList = authors.split(',').map((author) => author.trim());
@@ -101,7 +101,7 @@ export const handleFormSubmit = (
     const imageUrl = getImageUrl();
 
     const data: Omit<Book, 'id'> = {
-      name,
+      title,
       authors: authorList,
       publishedDate,
       description,

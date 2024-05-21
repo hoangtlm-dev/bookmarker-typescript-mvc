@@ -9,6 +9,7 @@ import {
   getBookByIdService,
   getBooksServices,
   getImageUrlServices,
+  getRecommendBookServices,
 } from '@/services';
 
 export default class BookModel {
@@ -37,6 +38,11 @@ export default class BookModel {
 
   getImageUrl = async (fileUpload: FormData) => {
     const response = await getImageUrlServices(fileUpload);
+    return response;
+  };
+
+  getRecommendBooks = async (query: string) => {
+    const response = await getRecommendBookServices(query);
     return response;
   };
 }

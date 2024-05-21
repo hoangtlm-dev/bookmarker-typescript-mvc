@@ -31,15 +31,53 @@
   border-radius: var(--md-border-radius);
 }
 
+.book-form .input-group.book-name {
+  position: relative;
+}
+
+.book-form .book-recommendation-list {
+  width: 100%;
+  position: absolute;
+  top: calc(100% - 20px);
+  background-color: var(--light-color);
+  z-index: 2;
+  border-radius: var(--md-border-radius);
+  box-shadow: 0 6px 10px silver;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.book-form .book-recommendation-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.book-form .book-recommendation-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.book-form .book-recommendation-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: var(--md-border-radius);
+}
+
+.book-form .book-recommendation-item {
+  padding: 16px;
+  cursor: pointer;
+}
+
+.book-form .book-recommendation-item:hover {
+  background-color: var(--light-blur-color);
+}
+
 .book-form .input-box,
 .book-form .input-box::placeholder,
-.book-form .input-box[type="date"] {
+.book-form .input-box[type='date'] {
   font-family: var(--font-regular);
   color: var(--light-blur-text-color);
 }
 
 .book-form .input-box::-webkit-calendar-picker-indicator {
-  background-image: url("../../assets/icons/calendar.svg");
+  background-image: url('../../assets/icons/calendar.svg');
   background-position: center;
   background-size: 16px 16px;
   background-repeat: no-repeat;
@@ -55,7 +93,7 @@
   height: 116px;
 }
 
-.book-form .book-img-preview[src=""] {
+.book-form .book-img-preview[src=''] {
   display: none;
 }
 

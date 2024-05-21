@@ -11,7 +11,7 @@ export const httpRequest = async <T, U>(url: string, method: string, data?: T): 
     body: null,
   };
 
-  if (method !== HTTP_REQUEST.METHODS.GET || method !== HTTP_REQUEST.METHODS.DELETE) {
+  if (method !== HTTP_REQUEST.METHODS.GET && method !== HTTP_REQUEST.METHODS.DELETE) {
     if (data instanceof FormData) {
       options.body = data;
     } else {

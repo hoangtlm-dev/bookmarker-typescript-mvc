@@ -48,21 +48,26 @@ const rules: ValidationRule = {
 export const appendErrorMessage = <T extends HTMLElement>(inputElement: T, errorMessage: string) => {
   if (inputElement.parentElement === null) return;
 
-  const errorElement = inputElement.parentElement.lastElementChild;
-
-  if (errorElement !== null) errorElement.textContent = errorMessage;
+  let errorElement = inputElement.parentElement.querySelector('.error-message');
+  if (!errorElement) {
+    errorElement = document.createElement('div');
+    errorElement.className = 'error-message';
+    inputElement.parentElement.appendChild(errorElement);
+  }
+  errorElement.textContent = errorMessage;
 };
 
 // Remove error message
 export const removeErrorMessage = <T extends HTMLElement>(inputElement: T) => {
   if (inputElement.parentElement === null) return;
 
-  const errorElement = inputElement.parentElement.lastElementChild;
-
-  if (errorElement !== null) errorElement.textContent = '';
+  const errorElement = inputElement.parentElement.querySelector('.error-message');
+  if (errorElement) {
+    errorElement.textContent = '';
+  }
 };
 
-// Validate all fields off form
+// Validate all fields of form
 export const validateForm = (fieldName: ValidationField, value: string, validateFieldName: string) => {
   const fieldRules = rules[fieldName];
   let errorMessage = '';
