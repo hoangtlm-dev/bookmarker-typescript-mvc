@@ -2,7 +2,7 @@
 import { BOOK_FORM, TOAST } from '@/constants';
 
 //Types
-import { Book, GetImageUrlHandler } from '@/types';
+import { Book, BookFormData, GetImageUrlHandler } from '@/types';
 
 //Templates
 import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templates';
@@ -76,11 +76,23 @@ export const handleNegativeButtonClick = (negativeButton: HTMLButtonElement, boo
   negativeButton.addEventListener('click', () => hideModal(bookFormModal));
 };
 
+export const isDataEqual = <T>(obj1: T, obj2: T, attributes: (keyof T)[]) => {
+  return attributes.every((attr) => {
+    const value1 = obj1[attr];
+    const value2 = obj2[attr];
+    if (Array.isArray(value1) && Array.isArray(value2)) {
+      return JSON.stringify(value1) === JSON.stringify(value2);
+    }
+    return value1 === value2;
+  });
+};
+
 export const handleFormSubmit = (
   form: HTMLFormElement,
   inputElements: NodeListOf<HTMLInputElement>,
   getImageUrl: () => string,
   isEdit: boolean,
+  originalData: BookFormData,
   saveCallback: (input: Omit<Book, 'id'>) => void,
   bookFormModal: HTMLElement,
   mainContent: HTMLElement,
@@ -89,7 +101,6 @@ export const handleFormSubmit = (
     event.preventDefault();
 
     const formData = new FormData(form);
-    if (formData === null) return;
 
     const title = formData.get('book-name') as string;
     const authors = formData.get('book-authors') as string;
@@ -100,7 +111,7 @@ export const handleFormSubmit = (
     const description = formData.get('book-description') as string;
     const imageUrl = getImageUrl();
 
-    const data: Omit<Book, 'id'> = {
+    const submitData: Omit<Book, 'id'> = {
       title,
       authors: authorList,
       publishedDate,
@@ -130,9 +141,16 @@ export const handleFormSubmit = (
       }
     });
 
+    const attributesToCheck: (keyof BookFormData)[] = ['title', 'description', 'authors', 'imageUrl', 'publishedDate'];
+
+    if (isDataEqual(originalData, submitData, attributesToCheck)) {
+      return;
+    }
+
     if (!isFormValid) return;
 
-    saveCallback(data);
+    saveCallback(submitData);
+
     hideModal(bookFormModal);
 
     const toastContainer = createElement('div', 'toast-container');
