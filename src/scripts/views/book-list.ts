@@ -9,7 +9,7 @@ import {
   DisplayFormHandler,
   EditBookHandler,
   GetImageUrlHandler,
-  GetRecomendBookHandler,
+  GetRecommendBookHandler,
   PageChangeHandler,
   RecommendBook,
   SearchBookHandler,
@@ -215,7 +215,7 @@ export default class BookListView {
   bindAddBook = (
     getImageUrlHandler: GetImageUrlHandler,
     addHandler: AddBookHandler,
-    getRecommendBookHandler: GetRecomendBookHandler,
+    getRecommendBookHandler: GetRecommendBookHandler,
   ) => {
     this.createBtn.addEventListener('click', (event) => {
       event.preventDefault();
@@ -235,7 +235,7 @@ export default class BookListView {
   bindEditBook = (
     displayFormHandler: DisplayFormHandler,
     getImageUrlHandler: GetImageUrlHandler,
-    getRecommendBookHandler: GetRecomendBookHandler,
+    getRecommendBookHandler: GetRecommendBookHandler,
     editHandler: EditBookHandler,
   ) => {
     this.mainContent.addEventListener('click', async (event) => {
@@ -275,12 +275,11 @@ export default class BookListView {
     book: Book,
     isEdit: boolean,
     getImageUrlHandler: GetImageUrlHandler,
-    getRecommendBookHandler: GetRecomendBookHandler,
+    getRecommendBookHandler: GetRecommendBookHandler,
     saveCallback: (input: Omit<Book, 'id'>) => void,
   ) => {
     const formTitle = createBookFormTitle(book, isEdit);
     const bookFormModal = createBookFormModal(book, formTitle);
-
     this.mainContent.appendChild(bookFormModal);
 
     const form = getElement<HTMLFormElement>('#book-form');
@@ -343,7 +342,7 @@ export default class BookListView {
     );
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
-    handleFormSubmit(form, inputElements, getImageUrl, isEdit, saveCallback, bookFormModal, this.mainContent);
+    handleFormSubmit(form, inputElements, getImageUrl, isEdit, book, saveCallback, bookFormModal, this.mainContent);
   };
 
   bindDeleteBook(handler: DeleteBookHandler) {

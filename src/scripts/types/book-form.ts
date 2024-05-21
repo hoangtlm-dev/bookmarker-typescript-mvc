@@ -1,3 +1,5 @@
+import { Book } from './book';
+
 export type BookOptions = {
   formTitle: string;
   formId: string;
@@ -8,3 +10,5 @@ export type BookOptions = {
   positiveText: string;
   negativeText: string;
 };
+
+export type BookFormData = Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
