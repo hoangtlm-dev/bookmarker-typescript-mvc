@@ -2,7 +2,7 @@
 import { PAGINATION } from '@/constants';
 
 //Types
-import { Book } from '@/types';
+import { Book, RecommendBook } from '@/types';
 
 import BookModel from '@/models/book';
 import BookListView from '@/views/book-list';
@@ -14,6 +14,7 @@ export default class BookListController {
   private renderBooks: Book[];
   private currentPage: number;
   private itemsPerPage: number;
+  private recommendBooks: RecommendBook[];
 
   constructor(bookModel: BookModel, bookListView: BookListView) {
     this.bookModel = bookModel;
@@ -22,13 +23,19 @@ export default class BookListController {
     this.renderBooks = [];
     this.currentPage = 1;
     this.itemsPerPage = PAGINATION.ITEMS_PER_PAGE;
+    this.recommendBooks = [];
   }
 
   init = async () => {
     await this.displayBookList();
     this.bookListView.bindPageChange(this.handlePageChange);
-    this.bookListView.bindAddBook(this.handleGetImageUrl, this.handleAddBook);
-    this.bookListView.bindEditBook(this.handleGetBookById, this.handleGetImageUrl, this.handleEditBook);
+    this.bookListView.bindAddBook(this.handleGetImageUrl, this.handleAddBook, this.handleGetRecommendBooks);
+    this.bookListView.bindEditBook(
+      this.handleGetBookById,
+      this.handleGetImageUrl,
+      this.handleGetRecommendBooks,
+      this.handleEditBook,
+    );
   };
 
   displayBookList = async () => {
@@ -56,6 +63,11 @@ export default class BookListController {
     this.renderBooks.unshift(response);
     this.originalBooks = [...this.renderBooks];
     this.updateBookList(this.originalBooks);
+  };
+
+  handleGetRecommendBooks = async (query: string) => {
+    const response = await this.bookModel.getRecommendBooks(query);
+    return response;
   };
 
   handleGetImageUrl = async (fileUpload: FormData) => {

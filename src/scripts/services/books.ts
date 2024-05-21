@@ -2,7 +2,7 @@
 import { HTTP_REQUEST, API_PATH } from '@/constants';
 
 // Types
-import { Book, ImgBBApiResponse } from '@/types';
+import { Book, ImgBBApiResponse, RecommendBook } from '@/types';
 
 // Utils
 import { httpRequest } from '@/utils';
@@ -10,6 +10,7 @@ import { httpRequest } from '@/utils';
 // Api path
 const bookApiUrl = `${process.env.BASE_API_URL}/${API_PATH.BOOKS}`;
 const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${process.env.IMG_UPLOAD_KEY}`;
+const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL;
 
 export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
@@ -18,6 +19,14 @@ export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> 
 
 export const getBooksServices = async (): Promise<Book[]> => {
   const response = await httpRequest<null, Book[]>(bookApiUrl, HTTP_REQUEST.METHODS.GET);
+  return response;
+};
+
+export const getRecommendBookServices = async (query: string): Promise<RecommendBook[]> => {
+  const response = await httpRequest<null, RecommendBook[]>(
+    `${recommendBookAPIUrl}?search=${query}`,
+    HTTP_REQUEST.METHODS.GET,
+  );
   return response;
 };
 

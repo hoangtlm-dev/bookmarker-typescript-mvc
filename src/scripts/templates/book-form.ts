@@ -4,7 +4,7 @@ import { BookOptions } from '@/types/book-form';
 import uploadIcon from '../../assets/icons/upload.svg';
 
 export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
-  const { name = '', description = '', authors = [], imageUrl = '', publishedDate = '' } = book;
+  const { title, description, authors, imageUrl, publishedDate } = book;
 
   const {
     formTitle = BOOK_FORM.FORM_TITLE.CREATE_BOOK,
@@ -23,7 +23,7 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
       <div class="form-content">
         <div class="input-group book-name">
           <label for="book-name" class="input-label text-sub-heading">Book name</label>
-          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="name" data-field-validate="Book's name" value="${name}"/>
+          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="name" data-field-validate="Book's name" value="${title}"/>
           <p class="text-description text-error error-message"></p>
         </div>
         <div class="input-group book-author">

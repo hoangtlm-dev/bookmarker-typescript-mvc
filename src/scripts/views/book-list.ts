@@ -8,7 +8,9 @@ import {
   DisplayFormHandler,
   EditBookHandler,
   GetImageUrlHandler,
+  GetRecomendBookHandler,
   PageChangeHandler,
+  RecommendBook,
 } from '@/types';
 
 // Utils
@@ -39,7 +41,7 @@ import deleteIcon from '../../assets/icons/trash.svg';
 import { BOOK_FORM } from '@/constants';
 
 // Mocks
-import { MOCK_BOOK, TEST_BOOKS } from '@/mocks';
+import { MOCK_BOOK } from '@/mocks';
 
 export default class BookListView {
   private mainContent: HTMLDivElement;
@@ -114,18 +116,25 @@ export default class BookListView {
     }
   };
 
-  displayRecommendationBooks = (bookListWrapper: HTMLUListElement, books: Book[]): void => {
+  displayRecommendationBooks = (bookListWrapper: HTMLUListElement, books: RecommendBook[]) => {
     while (bookListWrapper.firstChild) {
       bookListWrapper.removeChild(bookListWrapper.firstChild);
     }
 
     if (books.length > 0) {
       books.forEach((book) => {
-        const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
-        recommendBookItem.textContent = book.name;
-        bookListWrapper.appendChild(recommendBookItem);
+        if (book.language !== 'vi') {
+          const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
+          recommendBookItem.textContent = book.title;
+          bookListWrapper.appendChild(recommendBookItem);
+          bookListWrapper.style.display = 'block';
+        }
       });
     }
+  };
+
+  hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
+    bookListWrapper.style.display = 'none';
   };
 
   bindPageChange(handler: PageChangeHandler) {
@@ -140,19 +149,30 @@ export default class BookListView {
     });
   }
 
-  bindAddBook = (getImageUrlHandler: GetImageUrlHandler, addHandler: AddBookHandler) => {
+  bindAddBook = (
+    getImageUrlHandler: GetImageUrlHandler,
+    addHandler: AddBookHandler,
+    getRecommendBookHandler: GetRecomendBookHandler,
+  ) => {
     this.createBtn.addEventListener('click', (event) => {
       event.preventDefault();
 
-      this.showBookForm(MOCK_BOOK, false, getImageUrlHandler, async (data: Omit<Book, 'id'>) => {
-        addHandler(data);
-      });
+      this.showBookForm(
+        MOCK_BOOK,
+        false,
+        getImageUrlHandler,
+        getRecommendBookHandler,
+        async (data: Omit<Book, 'id'>) => {
+          addHandler(data);
+        },
+      );
     });
   };
 
   bindEditBook = (
     displayFormHandler: DisplayFormHandler,
     getImageUrlHandler: GetImageUrlHandler,
+    getRecommendBookHandler: GetRecomendBookHandler,
     editHandler: EditBookHandler,
   ) => {
     this.mainContent.addEventListener('click', async (event) => {
@@ -175,9 +195,15 @@ export default class BookListView {
 
         const selectedBook = await displayFormHandler(bookId);
 
-        this.showBookForm(selectedBook, true, getImageUrlHandler, async (data: Omit<Book, 'id'>) => {
-          editHandler(bookId, data);
-        });
+        this.showBookForm(
+          selectedBook,
+          true,
+          getImageUrlHandler,
+          getRecommendBookHandler,
+          async (data: Omit<Book, 'id'>) => {
+            editHandler(bookId, data);
+          },
+        );
       }
     });
   };
@@ -186,6 +212,7 @@ export default class BookListView {
     book: Book,
     isEdit: boolean,
     getImageUrlHandler: GetImageUrlHandler,
+    getRecommendBookHandler: GetRecomendBookHandler,
     saveCallback: (input: Omit<Book, 'id'>) => void,
   ) => {
     const formTitle = createBookFormTitle(book, isEdit);
@@ -207,14 +234,16 @@ export default class BookListView {
     const booksRecommendation = createElement<HTMLUListElement>('ul', 'book-recommendation-list');
     nameInputGroup.appendChild(booksRecommendation);
 
-    nameInput.addEventListener('input', () => {
-      const query = nameInput.value.trim().toLowerCase();
-      const filteredBooks = TEST_BOOKS.filter((book) => book.name.toLowerCase().includes(query));
-      this.displayRecommendationBooks(booksRecommendation, filteredBooks);
+    nameInput.addEventListener('input', async (event) => {
+      const target = event.target as HTMLInputElement;
+      const query = target.value.trim();
+      const recommendBooks = await getRecommendBookHandler(query);
+      this.displayRecommendationBooks(booksRecommendation, recommendBooks);
     });
 
     nameInput.addEventListener('blur', () => {
-      validateField(nameInput, 'name', nameInput.value, 'Book Name');
+      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
+      this.hideRecommendationBooks(booksRecommendation);
     });
 
     let imageUrl = book.imageUrl || '';

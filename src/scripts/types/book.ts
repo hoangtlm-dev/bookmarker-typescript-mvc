@@ -1,6 +1,6 @@
 export type Book = {
   id: number;
-  name: string;
+  title: string;
   description: string;
   authors: string[];
   imageUrl: string;
@@ -8,4 +8,16 @@ export type Book = {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
+};
+
+export type RecommendBook = {
+  id: string;
+  title: string;
+  subtitle: string;
+  authors: string[];
+  publishedDate: string;
+  description: string;
+  pageCount: number;
+  categories: string[];
+  language: 'en' | 'vi';
 };
