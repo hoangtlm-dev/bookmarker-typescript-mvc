@@ -18,6 +18,7 @@ import {
   createBookFormModal,
   createBookFormTitle,
   createElement,
+  debounce,
   getElement,
   getElements,
   handleFileInputChange,
@@ -234,19 +235,24 @@ export default class BookListView {
     const booksRecommendation = createElement<HTMLUListElement>('ul', 'book-recommendation-list');
     nameInputGroup.appendChild(booksRecommendation);
 
-    nameInput.addEventListener('input', async (event) => {
-      const target = event.target as HTMLInputElement;
-      const query = target.value.trim();
-      const recommendBooks = await getRecommendBookHandler(query);
-      this.displayRecommendationBooks(booksRecommendation, recommendBooks);
-    });
+    nameInput.addEventListener(
+      'input',
+      debounce(async (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        const query = target.value.trim();
+        if (query) {
+          const recommendBooks = await getRecommendBookHandler(query);
+          this.displayRecommendationBooks(booksRecommendation, recommendBooks);
+        }
+      }, 500),
+    );
 
     nameInput.addEventListener('blur', () => {
       validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
       this.hideRecommendationBooks(booksRecommendation);
     });
 
-    let imageUrl = book.imageUrl || '';
+    let imageUrl = book.imageUrl;
 
     const setImageUrl = (url: string) => {
       imageUrl = url;
