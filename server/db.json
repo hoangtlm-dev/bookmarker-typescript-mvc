@@ -132,9 +132,7 @@
       "deletedAt": null
     },
     {
-      "id": 11,
       "title": "The TypeScript Workshop",
-      "description": "A Practical Guide to Confident, Effective TypeScript Programming",
       "authors": [
         "Ben Grynhaus",
         "Jordan Hudgens",
@@ -142,11 +140,12 @@
         "Matt Morgan",
         "Wekoslav Stefanovski"
       ],
-      "imageUrl": "http://books.google.com/books/content?id=eN06EAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
       "publishedDate": "2011-05-13",
+      "description": "A Practical Guide to Confident, Effective TypeScript Programming",
+      "imageUrl": "http://books.google.com/books/content?id=eN06EAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
       "createdAt": "1680658968299",
-      "updatedAt": "1680658968299",
-      "deletedAt": null
+      "updatedAt": "1716404145734",
+      "id": 11
     },
     {
       "id": 12,

@@ -5,5 +5,6 @@ export const SORT = {
   },
   KEY: {
     TITLE: 'title',
+    CREATED_AT: 'createdAt',
   },
 } as const;
