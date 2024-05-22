@@ -1,5 +1,5 @@
 // Utils
-import { createElement } from '../utils';
+import { createElement } from '../../utils';
 
 interface OnPageChange {
   (pageNumber: number): void;

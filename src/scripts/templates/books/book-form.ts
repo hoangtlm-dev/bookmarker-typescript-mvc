@@ -1,7 +1,7 @@
 import { BOOK_FORM } from '@/constants';
 import { Book } from '@/types';
 import { BookOptions } from '@/types/book-form';
-import uploadIcon from '../../assets/icons/upload.svg';
+import uploadIcon from '../../../assets/icons/upload.svg';
 
 export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
   const { title, description, authors, imageUrl, publishedDate } = book;

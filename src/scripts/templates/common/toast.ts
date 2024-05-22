@@ -1,17 +1,16 @@
-import closeIcon from '../../assets/icons/close.svg';
+import closeIcon from '../../../assets/icons/close.svg';
 
 // Types
 import { ToastDescription, ToastMessage, ToastOptions } from '@/types';
 
 // Constants
-import { TOAST } from '../constants';
+import { TOAST } from '../../constants';
 
 const defaultToastOptions: ToastOptions = {
   type: TOAST.TYPE.SUCCESS,
   closeButtonId: TOAST.CLOSE_BUTTON_ID,
 };
 
- 
 export const toastTemplate = (
   message: ToastMessage,
   description: ToastDescription,
