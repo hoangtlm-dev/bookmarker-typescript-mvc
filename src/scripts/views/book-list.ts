@@ -158,7 +158,7 @@ export default class BookListView {
     bookListWrapper.remove();
   };
 
-  bindPageChange(handler: PageChangeHandler) {
+  bindPageChange = (handler: PageChangeHandler) => {
     this.mainContent.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       if (target.classList.contains('btn-pagination')) {
@@ -168,9 +168,9 @@ export default class BookListView {
         }
       }
     });
-  }
+  };
 
-  toggleSortStatus(target: HTMLElement) {
+  toggleSortStatus = (target: HTMLElement) => {
     const isAscending = target.classList.contains('asc');
     const isDescending = target.classList.contains('desc');
     const oppositeClass = isAscending ? 'desc' : 'asc';
@@ -199,25 +199,25 @@ export default class BookListView {
       this.sortStatus = newStatus;
       target.classList.add('active');
     }
-  }
+  };
 
-  bindSortBook(handler: SortBookHandler) {
+  bindSortBook = (handler: SortBookHandler) => {
     this.sortBtns.forEach((btn) => {
       btn.addEventListener('click', (event) => {
         this.toggleSortStatus(event.target as HTMLElement);
         handler(this.sortStatus);
       });
     });
-  }
+  };
 
-  bindSearchInputChange(handler: SearchBookHandler) {
+  bindSearchInputChange = (handler: SearchBookHandler) => {
     const debouncedHandler = debounce(handler, DEBOUNCE.DELAY_TIME);
 
     this.searchBox.addEventListener('input', (event) => {
       const target = event.target as HTMLInputElement;
       debouncedHandler(target.value);
     });
-  }
+  };
 
   bindAddBook = (
     getImageUrlHandler: GetImageUrlHandler,

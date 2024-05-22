@@ -11,4 +11,4 @@ export type BookOptions = {
   negativeText: string;
 };
 
-export type BookFormData = Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
+export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;

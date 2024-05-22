@@ -6,23 +6,25 @@ import { Book } from '@/types';
 
 import BookModel from '@/models/book';
 import BookListView from '@/views/book-list';
+
+//Utils
 import { sortArray } from '@/utils/sort-array';
 
 export default class BookListController {
   private bookModel: BookModel;
   private bookListView: BookListView;
-  private originalBooks: Book[];
   private renderBooks: Book[];
   private currentPage: number;
   private itemsPerPage: number;
+  private sortStatus: string;
 
   constructor(bookModel: BookModel, bookListView: BookListView) {
     this.bookModel = bookModel;
     this.bookListView = bookListView;
-    this.originalBooks = [];
     this.renderBooks = [];
     this.currentPage = 1;
     this.itemsPerPage = PAGINATION.ITEMS_PER_PAGE;
+    this.sortStatus = '';
   }
 
   init = async () => {
@@ -43,9 +45,11 @@ export default class BookListController {
   displayBookList = async () => {
     try {
       this.bookListView.displaySkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
+
       const response = await this.bookModel.getBooks();
-      this.originalBooks = response;
-      this.renderBooks = [...this.originalBooks];
+      const latestBooks = sortArray(response, SORT.KEY.CREATED_AT, SORT.STATUS.DESCENDING);
+      this.renderBooks = [...latestBooks];
+
       this.updateBookList(this.renderBooks);
     } catch (error) {
       if (error instanceof Error) {
@@ -59,8 +63,8 @@ export default class BookListController {
   updateBookList = (bookList: Book[]) => {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    const booksToShow = bookList.slice(startIndex, endIndex);
-    this.bookListView.displayBooks(bookList, booksToShow, this.currentPage);
+    const booksRender = bookList.slice(startIndex, endIndex);
+    this.bookListView.displayBooks(bookList, booksRender, this.currentPage);
   };
 
   handlePageChange = (pageNumber: number) => {
@@ -69,10 +73,15 @@ export default class BookListController {
   };
 
   handleAddBook = async (data: Omit<Book, 'id'>) => {
-    const response = await this.bookModel.addBook(data);
-    this.renderBooks.unshift(response);
-    this.originalBooks = [...this.renderBooks];
-    this.updateBookList(this.originalBooks);
+    await this.bookModel.addBook(data);
+    this.renderBooks = await this.bookModel.getBooks();
+
+    // Save the book list when sorting
+    if (this.sortStatus !== '') {
+      this.handleSortBookByTitle(this.sortStatus);
+    }
+
+    this.updateBookList(this.renderBooks);
   };
 
   handleGetRecommendBooks = async (query: string) => {
@@ -99,6 +108,8 @@ export default class BookListController {
   };
 
   handleSortBookByTitle = (sortStatus: string) => {
+    this.sortStatus = sortStatus;
+
     switch (sortStatus) {
       case SORT.STATUS.ASCENDING: {
         const ascSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.ASCENDING);
@@ -110,8 +121,6 @@ export default class BookListController {
         this.renderBooks = [...descSortedBooks];
         break;
       }
-      default:
-        this.renderBooks = [...this.originalBooks];
     }
 
     this.updateBookList(this.renderBooks);
@@ -124,9 +133,12 @@ export default class BookListController {
 
   handleDeleteBook = async (bookId: number) => {
     await this.bookModel.deleteBook(bookId);
-    // Refresh the book list from the model
     this.renderBooks = await this.bookModel.getBooks();
-    this.originalBooks = [...this.renderBooks];
+
+    // Save the book list when sorting
+    if (this.sortStatus !== '') {
+      this.handleSortBookByTitle(this.sortStatus);
+    }
 
     // Move back one page if the current page has no items
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -134,7 +146,6 @@ export default class BookListController {
       this.currentPage--;
     }
 
-    // Update the view with the new list of books
     this.updateBookList(this.renderBooks);
   };
 }

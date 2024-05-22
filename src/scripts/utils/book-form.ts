@@ -110,6 +110,7 @@ export const handleFormSubmit = (
     const publishedDate = formData.get('book-published-date') as string;
     const description = formData.get('book-description') as string;
     const imageUrl = getImageUrl();
+    const currentTime = new Date().getTime().toString();
 
     const submitData: Omit<Book, 'id'> = {
       title,
@@ -117,8 +118,8 @@ export const handleFormSubmit = (
       publishedDate,
       description,
       imageUrl,
-      createdAt: new Date().getTime().toString(),
-      updatedAt: new Date().getTime().toString(),
+      createdAt: isEdit ? originalData.createdAt : currentTime,
+      updatedAt: currentTime,
       deletedAt: undefined,
     };
 
