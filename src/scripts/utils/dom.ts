@@ -36,6 +36,26 @@ export const getElements = <T extends HTMLElement>(selector: string): NodeListOf
 };
 
 /**
+ * Removes all child nodes from the specified HTML element.
+ *
+ * This function iterates over all child nodes of the given HTML element and removes them one by one.
+ * It's a utility function that ensures the specified element is emptied of all its content.
+ *
+ * @param {HTMLElement} element - The HTML element from which all child nodes will be removed.
+ *
+ * @example
+ * // Assuming there is a <div id="myDiv"><p>Paragraph</p><span>Span</span></div> in the HTML document
+ * const myDiv = document.getElementById('myDiv');
+ * removeChildNodes(myDiv);
+ * // Now, <div id="myDiv"></div> will be empty.
+ */
+export const removeChildNodes = (element: HTMLElement) => {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+};
+
+/**
  * Removes existing HTML elements from the DOM
  *
  * @param parentElement - HTML element

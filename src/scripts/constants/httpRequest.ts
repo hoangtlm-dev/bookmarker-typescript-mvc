@@ -1,5 +1,5 @@
 export const HTTP_REQUEST = {
-  ERROR_SENDING: 'Error while sending request',
+  ERROR_SENDING: 'Oops! Something went wrong :(',
   CONTENT_TYPE: {
     APPLICATION_JSON: 'application/json',
   },

@@ -29,6 +29,7 @@ import {
   handleInputValidation,
   handleNegativeButtonClick,
   hideModal,
+  removeChildNodes,
   removeDOMElement,
   removeDOMElementBySelector,
   showModal,
@@ -43,6 +44,7 @@ import {
   generateConfirmDialog,
   generateListEmpty,
   generatePagination,
+  generateRequestError,
   generateSkeletonBookItem,
   modalContentTemplate,
   toastTemplate,
@@ -76,6 +78,11 @@ export default class BookListView {
     this.sortBtns = getElements('.btn-sort');
     this.sortStatus = '';
   }
+
+  bindRequestError = (message: string) => {
+    removeChildNodes(this.mainContent);
+    this.mainContent.innerHTML = generateRequestError(message);
+  };
 
   displaySkeletonBooks = (count: number) => {
     Array.from({ length: count }).forEach(() => {

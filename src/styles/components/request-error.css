@@ -1,0 +1,32 @@
+.request-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.request-error .request-error-heading,
+.request-error .request-error-message {
+  text-align: center;
+}
+
+.request-error .request-error-heading {
+  font-size: var(--lg-fs);
+}
+
+.request-error .request-error-message,
+.request-error .back-link {
+  font-size: var(--md-fs);
+}
+
+.request-error .request-error-message {
+  color: var(--light-blur-text-color);
+}
+
+.request-error .back-link {
+  color: var(--primary-color);
+}
+
+.request-error .back-link:hover {
+  opacity: 0.6;
+}

@@ -16,6 +16,7 @@ import {
   handleInputValidation,
   handleNegativeButtonClick,
   handleFormSubmit,
+  removeChildNodes,
 } from '../utils';
 
 // Templates
@@ -25,6 +26,7 @@ import {
   generateBookDetails,
   generateConfirmDialog,
   generateSkeletonBookDetails,
+  generateRequestError,
 } from '../templates';
 import { Book, DeleteBookHandler, DisplayFormHandler, EditBookHandler, GetImageUrlHandler } from '@/types';
 
@@ -37,11 +39,10 @@ export default class BookDetailsView {
     this.bookId = window.location.search.slice(4);
   }
 
-  removeChildNodes(element: HTMLElement) {
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
-    }
-  }
+  bindRequestError = (message: string) => {
+    removeChildNodes(this.mainContent);
+    this.mainContent.innerHTML = generateRequestError(message);
+  };
 
   displaySkeletonBookDetails() {
     const bookDetailsWrapper = createElement('section', 'skeleton-book-details container');
@@ -50,7 +51,7 @@ export default class BookDetailsView {
   }
 
   getBookDetails(book: Book) {
-    this.removeChildNodes(this.mainContent);
+    removeChildNodes(this.mainContent);
     const bookDetailsWrapper = createElement('section', 'book-details container');
     bookDetailsWrapper.innerHTML = generateBookDetails(book);
     updateDOMElement(this.mainContent, bookDetailsWrapper);
