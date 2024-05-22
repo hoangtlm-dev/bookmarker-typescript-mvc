@@ -23,9 +23,11 @@ export default class BookDetailsController {
       const response = await this.bookModel.getBookById(parseInt(bookId));
       this.bookDetailsView.getBookDetails(response);
     } catch (error) {
-      // this.bookDetailsView.displayServerError();
-      // throw new Error(error);
-      console.log(error);
+      if (error instanceof Error) {
+        this.bookDetailsView.bindRequestError(error.message);
+      } else {
+        this.bookDetailsView.bindRequestError(error as string);
+      }
     }
   };
 

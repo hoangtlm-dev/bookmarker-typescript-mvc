@@ -41,11 +41,19 @@ export default class BookListController {
   };
 
   displayBookList = async () => {
-    this.bookListView.displaySkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
-    const response = await this.bookModel.getBooks();
-    this.originalBooks = response;
-    this.renderBooks = [...this.originalBooks];
-    this.updateBookList(this.renderBooks);
+    try {
+      this.bookListView.displaySkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
+      const response = await this.bookModel.getBooks();
+      this.originalBooks = response;
+      this.renderBooks = [...this.originalBooks];
+      this.updateBookList(this.renderBooks);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindRequestError(error.message);
+      } else {
+        this.bookListView.bindRequestError(error as string);
+      }
+    }
   };
 
   updateBookList = (bookList: Book[]) => {
