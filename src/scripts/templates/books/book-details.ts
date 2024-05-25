@@ -1,8 +1,8 @@
-import backIcon from '../../assets/icons/left-forward.svg';
-import deleteIcon from '../../assets/icons/trash.svg';
-import editIcon from '../../assets/icons/edit.svg';
+import backIcon from '../../../assets/icons/left-forward.svg';
+import deleteIcon from '../../../assets/icons/trash.svg';
+import editIcon from '../../../assets/icons/edit.svg';
 
-import { timeFormat } from '../utils/time-control';
+import { timeFormat } from '../../utils/time-control';
 import { Book } from '@/types';
 
 export const generateBookDetails = (book: Book) => {

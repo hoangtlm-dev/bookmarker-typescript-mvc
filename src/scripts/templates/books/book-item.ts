@@ -2,7 +2,7 @@
 import { Book } from '@/types';
 
 // Utils
-import { getHours } from '../utils';
+import { getHours } from '../../utils';
 
 interface Icons {
   viewDetailsIcon: string;

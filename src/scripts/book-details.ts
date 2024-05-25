@@ -7,4 +7,6 @@ const bookDetailsView = new BookDetailsView();
 
 const app = new BookDetailsController(bookModel, bookDetailsView);
 
-app.init();
+document.addEventListener('DOMContentLoaded', (): void => {
+  app.init();
+});
