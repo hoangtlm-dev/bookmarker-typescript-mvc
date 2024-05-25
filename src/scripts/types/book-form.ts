@@ -1,3 +1,7 @@
+// Constants
+import { BOOK_FORM } from '@/constants';
+
+//Types
 import { Book } from './book';
 
 export type BookOptions = {
@@ -10,5 +14,7 @@ export type BookOptions = {
   positiveText: string;
   negativeText: string;
 };
+
+export type BookFormMode = (typeof BOOK_FORM.MODE)[keyof typeof BOOK_FORM.MODE];
 
 export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;

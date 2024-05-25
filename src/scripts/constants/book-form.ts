@@ -1,4 +1,8 @@
 export const BOOK_FORM = {
+  MODE: {
+    ADD_BOOK: 'Add',
+    EDIT_BOOK: 'Edit',
+  },
   FORM_TITLE: {
     CREATE_BOOK: 'Create a new book marker',
     EDIT_BOOK: (bookName: string) => `Edit: ${bookName}`,

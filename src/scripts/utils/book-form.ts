@@ -2,7 +2,7 @@
 import { BOOK_FORM, TOAST } from '@/constants';
 
 //Types
-import { Book, BookFormData, GetImageUrlHandler } from '@/types';
+import { Book, BookFormData, BookFormMode, GetImageUrlHandler } from '@/types';
 
 //Templates
 import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templates';
@@ -20,8 +20,10 @@ import {
   validateForm,
 } from '@/utils';
 
-export const createBookFormTitle = (book: Book, isEdit: boolean) => {
-  return isEdit ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.title) : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
+export const createBookFormTitle = (book: Book, mode: BookFormMode) => {
+  return mode === BOOK_FORM.MODE.EDIT_BOOK
+    ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.title)
+    : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
 };
 
 export const createBookFormModal = (book: Book, formTitle: string) => {
@@ -91,7 +93,7 @@ export const handleFormSubmit = (
   form: HTMLFormElement,
   inputElements: NodeListOf<HTMLInputElement>,
   getImageUrl: () => string,
-  isEdit: boolean,
+  mode: BookFormMode,
   originalData: BookFormData,
   saveCallback: (input: Omit<Book, 'id'>) => void,
   bookFormModal: HTMLElement,
@@ -118,7 +120,7 @@ export const handleFormSubmit = (
       publishedDate,
       description,
       imageUrl,
-      createdAt: isEdit ? originalData.createdAt : currentTime,
+      createdAt: mode === BOOK_FORM.MODE.EDIT_BOOK ? originalData.createdAt : currentTime,
       updatedAt: currentTime,
       deletedAt: undefined,
     };
@@ -157,7 +159,10 @@ export const handleFormSubmit = (
     const toastContainer = createElement('div', 'toast-container');
     showToast(
       toastContainer,
-      toastTemplate(TOAST.MESSAGE.SUCCESS, isEdit ? TOAST.DESCRIPTION.EDITED_BOOK : TOAST.DESCRIPTION.ADDED_BOOK),
+      toastTemplate(
+        TOAST.MESSAGE.SUCCESS,
+        mode === BOOK_FORM.MODE.EDIT_BOOK ? TOAST.DESCRIPTION.EDITED_BOOK : TOAST.DESCRIPTION.ADDED_BOOK,
+      ),
       TOAST.DISPLAY_TIME,
     );
 
