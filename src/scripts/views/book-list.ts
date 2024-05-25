@@ -3,16 +3,15 @@ import { DEBOUNCE, PAGINATION, SORT, TOAST } from '@/constants';
 
 // Types
 import {
-  AddBookHandler,
+  AddFormHandlers,
   Book,
+  BookFormMode,
   DeleteBookHandler,
-  DisplayFormHandler,
-  EditBookHandler,
-  GetImageUrlHandler,
-  GetRecommendBookHandler,
+  EditFormHandlers,
   PageChangeHandler,
   RecommendBook,
   SearchBookHandler,
+  ShowFormHandlers,
   SortBookHandler,
 } from '@/types';
 
@@ -219,32 +218,26 @@ export default class BookListView {
     });
   };
 
-  bindAddBook = (
-    getImageUrlHandler: GetImageUrlHandler,
-    addHandler: AddBookHandler,
-    getRecommendBookHandler: GetRecommendBookHandler,
-  ) => {
+  bindAddBook = (addFormHandlers: AddFormHandlers) => {
+    const { getImageUrlHandler, getRecommendBookHandler, addBookHandler } = addFormHandlers;
+
     this.createBtn.addEventListener('click', (event) => {
       event.preventDefault();
 
-      this.showBookForm(
-        MOCK_BOOK,
-        false,
+      const showFormHandlers: ShowFormHandlers = {
         getImageUrlHandler,
         getRecommendBookHandler,
-        async (data: Omit<Book, 'id'>) => {
-          addHandler(data);
+        saveHandler: async (data: Omit<Book, 'id'>) => {
+          addBookHandler(data);
         },
-      );
+      };
+
+      this.showBookForm(MOCK_BOOK, BOOK_FORM.MODE.ADD_BOOK, showFormHandlers);
     });
   };
 
-  bindEditBook = (
-    displayFormHandler: DisplayFormHandler,
-    getImageUrlHandler: GetImageUrlHandler,
-    getRecommendBookHandler: GetRecommendBookHandler,
-    editHandler: EditBookHandler,
-  ) => {
+  bindEditBook = (editFormHandlers: EditFormHandlers) => {
+    const { getBookHandler, getImageUrlHandler, getRecommendBookHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
       const target = event.target as HTMLElement;
 
@@ -263,29 +256,25 @@ export default class BookListView {
 
         const bookId = parseInt(bookIdString);
 
-        const selectedBook = await displayFormHandler(bookId);
+        const selectedBook = await getBookHandler(bookId);
 
-        this.showBookForm(
-          selectedBook,
-          true,
+        const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
           getRecommendBookHandler,
-          async (data: Omit<Book, 'id'>) => {
-            editHandler(bookId, data);
+          saveHandler: async (data: Omit<Book, 'id'>) => {
+            editBookHandler(bookId, data);
           },
-        );
+        };
+
+        this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
       }
     });
   };
 
-  showBookForm = (
-    book: Book,
-    isEdit: boolean,
-    getImageUrlHandler: GetImageUrlHandler,
-    getRecommendBookHandler: GetRecommendBookHandler,
-    saveCallback: (input: Omit<Book, 'id'>) => void,
-  ) => {
-    const formTitle = createBookFormTitle(book, isEdit);
+  showBookForm = (book: Book, mode: BookFormMode, showFormHandlers: ShowFormHandlers) => {
+    const { getImageUrlHandler, getRecommendBookHandler, saveHandler } = showFormHandlers;
+
+    const formTitle = createBookFormTitle(book, mode);
     const bookFormModal = createBookFormModal(book, formTitle);
     this.mainContent.appendChild(bookFormModal);
 
@@ -303,25 +292,27 @@ export default class BookListView {
       getElement<HTMLUListElement>('.book-recommendation-list') ||
       createElement<HTMLUListElement>('ul', 'book-recommendation-list');
 
-    nameInput.addEventListener(
-      'input',
-      debounce(async (event: Event) => {
-        const target = event.target as HTMLInputElement;
-        const query = target.value.trim();
+    if (mode === BOOK_FORM.MODE.ADD_BOOK && getRecommendBookHandler) {
+      nameInput.addEventListener(
+        'input',
+        debounce(async (event: Event) => {
+          const target = event.target as HTMLInputElement;
+          const query = target.value.trim();
 
-        if (query) {
-          const recommendBooks = await getRecommendBookHandler(query);
-          this.displayRecommendationBooks(booksRecommendation, recommendBooks);
-          if (!booksRecommendation.parentElement) {
-            updateDOMElement(nameInputGroup, booksRecommendation);
+          if (query) {
+            const recommendBooks = await getRecommendBookHandler(query);
+            this.displayRecommendationBooks(booksRecommendation, recommendBooks);
+            if (!booksRecommendation.parentElement) {
+              updateDOMElement(nameInputGroup, booksRecommendation);
+            }
+          } else {
+            if (booksRecommendation.parentElement) {
+              this.hideRecommendationBooks(booksRecommendation);
+            }
           }
-        } else {
-          if (booksRecommendation.parentElement) {
-            this.hideRecommendationBooks(booksRecommendation);
-          }
-        }
-      }, 500),
-    );
+        }, 500),
+      );
+    }
 
     nameInput.addEventListener('blur', () => {
       this.hideRecommendationBooks(booksRecommendation);
@@ -349,7 +340,7 @@ export default class BookListView {
     );
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
-    handleFormSubmit(form, inputElements, getImageUrl, isEdit, book, saveCallback, bookFormModal, this.mainContent);
+    handleFormSubmit(form, inputElements, getImageUrl, mode, book, saveHandler, bookFormModal, this.mainContent);
   };
 
   bindDeleteBook(handler: DeleteBookHandler) {

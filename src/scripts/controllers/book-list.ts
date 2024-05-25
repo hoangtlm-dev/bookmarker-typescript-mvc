@@ -2,7 +2,7 @@
 import { PAGINATION, SORT } from '@/constants';
 
 //Types
-import { Book } from '@/types';
+import { AddFormHandlers, Book, EditFormHandlers } from '@/types';
 
 import BookModel from '@/models/book';
 import BookListView from '@/views/book-list';
@@ -17,6 +17,8 @@ export default class BookListController {
   private currentPage: number;
   private itemsPerPage: number;
   private sortStatus: string;
+  private addFormHandlers: AddFormHandlers;
+  private editFormHandlers: EditFormHandlers;
 
   constructor(bookModel: BookModel, bookListView: BookListView) {
     this.bookModel = bookModel;
@@ -25,18 +27,26 @@ export default class BookListController {
     this.currentPage = 1;
     this.itemsPerPage = PAGINATION.ITEMS_PER_PAGE;
     this.sortStatus = '';
+
+    this.addFormHandlers = {
+      getImageUrlHandler: this.handleGetImageUrl,
+      getRecommendBookHandler: this.handleGetRecommendBooks,
+      addBookHandler: this.handleAddBook,
+    };
+
+    this.editFormHandlers = {
+      getBookHandler: this.handleGetBookById,
+      getImageUrlHandler: this.handleGetImageUrl,
+      getRecommendBookHandler: this.handleGetRecommendBooks,
+      editBookHandler: this.handleEditBook,
+    };
   }
 
   init = async () => {
     await this.displayBookList();
     this.bookListView.bindPageChange(this.handlePageChange);
-    this.bookListView.bindAddBook(this.handleGetImageUrl, this.handleAddBook, this.handleGetRecommendBooks);
-    this.bookListView.bindEditBook(
-      this.handleGetBookById,
-      this.handleGetImageUrl,
-      this.handleGetRecommendBooks,
-      this.handleEditBook,
-    );
+    this.bookListView.bindAddBook(this.addFormHandlers);
+    this.bookListView.bindEditBook(this.editFormHandlers);
     this.bookListView.bindSearchInputChange(this.handleSearchBook);
     this.bookListView.bindSortBook(this.handleSortBookByTitle);
     this.bookListView.bindDeleteBook(this.handleDeleteBook);
@@ -74,14 +84,7 @@ export default class BookListController {
 
   handleAddBook = async (data: Omit<Book, 'id'>) => {
     await this.bookModel.addBook(data);
-    this.renderBooks = await this.bookModel.getBooks();
-
-    // Save the book list when sorting
-    if (this.sortStatus !== '') {
-      this.handleSortBookByTitle(this.sortStatus);
-    }
-
-    this.updateBookList(this.renderBooks);
+    await this.displayBookList();
   };
 
   handleGetRecommendBooks = async (query: string) => {
@@ -119,6 +122,10 @@ export default class BookListController {
       case SORT.STATUS.DESCENDING: {
         const descSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.DESCENDING);
         this.renderBooks = [...descSortedBooks];
+        break;
+      }
+      default: {
+        this.displayBookList();
         break;
       }
     }
