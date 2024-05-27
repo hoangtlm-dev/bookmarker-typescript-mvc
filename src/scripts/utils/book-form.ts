@@ -2,7 +2,15 @@
 import { BOOK_FORM, TOAST } from '@/constants';
 
 //Types
-import { Book, BookFormData, BookFormMode, GetImageUrlHandler } from '@/types';
+import {
+  Book,
+  BookFormData,
+  BookFormMode,
+  FileChangeHandlers,
+  FileChangeOptionElements,
+  FormSubmitHandlers,
+  FormSubmitOptionElements,
+} from '@/types';
 
 //Templates
 import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templates';
@@ -36,13 +44,12 @@ export const createBookFormModal = (book: Book, formTitle: string) => {
 
 export const handleFileInputChange = (
   fileInput: HTMLInputElement,
-  bookNamePreview: HTMLElement,
-  bookImgPreview: HTMLImageElement,
-  uploadBtn: HTMLButtonElement,
-  positiveButton: HTMLButtonElement,
-  getImageUrlHandler: GetImageUrlHandler,
-  setImageUrl: (url: string) => void,
+  fileChangeOptionElements: FileChangeOptionElements,
+  fileChangeHandlers: FileChangeHandlers,
 ) => {
+  const { bookNamePreview, bookImgPreview, positiveButton, uploadBtn } = fileChangeOptionElements;
+  const { getImageUrlHandler, setImageUrl } = fileChangeHandlers;
+
   fileInput.addEventListener('change', async (event) => {
     positiveButton.disabled = true;
     const target = event.target as HTMLInputElement;
@@ -91,14 +98,14 @@ export const isDataEqual = <T>(obj1: T, obj2: T, attributes: (keyof T)[]) => {
 
 export const handleFormSubmit = (
   form: HTMLFormElement,
-  inputElements: NodeListOf<HTMLInputElement>,
-  getImageUrl: () => string,
   mode: BookFormMode,
   originalData: BookFormData,
-  saveCallback: (input: Omit<Book, 'id'>) => void,
-  bookFormModal: HTMLElement,
-  mainContent: HTMLElement,
+  formSubmitOptionElements: FormSubmitOptionElements,
+  formSubmitHandlers: FormSubmitHandlers,
 ) => {
+  const { getImageUrl, saveHandler } = formSubmitHandlers;
+  const { inputElements, bookFormModal, mainContent } = formSubmitOptionElements;
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -144,15 +151,16 @@ export const handleFormSubmit = (
       }
     });
 
+    if (!isFormValid) return;
+
+    // Check if the original data is the same as the submitted data
     const attributesToCheck: (keyof BookFormData)[] = ['title', 'description', 'authors', 'imageUrl', 'publishedDate'];
 
     if (isDataEqual(originalData, submitData, attributesToCheck)) {
       return;
     }
 
-    if (!isFormValid) return;
-
-    saveCallback(submitData);
+    saveHandler(submitData);
 
     hideModal(bookFormModal);
 

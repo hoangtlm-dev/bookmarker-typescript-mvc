@@ -278,6 +278,7 @@ export default class BookListView {
     const bookFormModal = createBookFormModal(book, formTitle);
     this.mainContent.appendChild(bookFormModal);
 
+    const mainContent = this.mainContent;
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
     const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
@@ -329,18 +330,15 @@ export default class BookListView {
       return imageUrl;
     };
 
-    handleFileInputChange(
-      fileInput,
-      bookNamePreview,
-      bookImgPreview,
-      uploadBtn,
-      positiveButton,
-      getImageUrlHandler,
-      setImageUrl,
-    );
+    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, uploadBtn, positiveButton };
+    const fileChangeHandlers = { getImageUrlHandler, setImageUrl };
+    const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
+    const formSubmitHandlers = { getImageUrl, saveHandler };
+
+    handleFileInputChange(fileInput, fileChangeOptionElements, fileChangeHandlers);
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
-    handleFormSubmit(form, inputElements, getImageUrl, mode, book, saveHandler, bookFormModal, this.mainContent);
+    handleFormSubmit(form, mode, book, formSubmitOptionElements, formSubmitHandlers);
   };
 
   bindDeleteBook(handler: DeleteBookHandler) {
