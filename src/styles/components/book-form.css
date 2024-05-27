@@ -115,7 +115,7 @@
   opacity: 0.8;
 }
 
-.book-form .book-image .input-box {
+.book-form .book-image input[type='file'] {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -143,6 +143,11 @@
   min-width: 120px;
   border-radius: var(--md-border-radius);
   text-align: center;
+}
+
+.book-form .btn-save[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .book-form .book-preview {

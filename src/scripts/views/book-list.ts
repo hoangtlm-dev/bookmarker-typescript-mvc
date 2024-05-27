@@ -6,6 +6,7 @@ import {
   AddFormHandlers,
   Book,
   BookFormMode,
+  CompareBook,
   DeleteBookHandler,
   EditFormHandlers,
   PageChangeHandler,
@@ -21,6 +22,7 @@ import {
   createBookFormTitle,
   createElement,
   debounce,
+  getCurrentFormData,
   getElement,
   getElements,
   handleFileInputChange,
@@ -284,6 +286,7 @@ export default class BookListView {
     const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
     const nameInput = getElement<HTMLInputElement>('.input-box[name="book-name"]');
     const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
+    const hiddenFileInput = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
@@ -292,6 +295,42 @@ export default class BookListView {
     const booksRecommendation =
       getElement<HTMLUListElement>('.book-recommendation-list') ||
       createElement<HTMLUListElement>('ul', 'book-recommendation-list');
+
+    const originalData: CompareBook = {
+      title: book.title,
+      authors: book.authors.join(','),
+      publishedDate: book.publishedDate,
+      imageUrl: book.imageUrl,
+      description: book.description,
+    };
+
+    // Disable Save button when the data is not changed
+    if (mode === BOOK_FORM.MODE.EDIT_BOOK) {
+      positiveButton.disabled = true;
+
+      const debouncedCompare = debounce(() => {
+        const currentData = getCurrentFormData(inputElements);
+        console.log(currentData);
+        const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
+
+        if (!isSameData) {
+          positiveButton.disabled = false;
+        } else {
+          positiveButton.disabled = true;
+        }
+      }, 500);
+
+      inputElements.forEach((input) => {
+        if (input.type === 'file') {
+          input.addEventListener('change', () => {
+            debouncedCompare();
+          });
+        }
+        input.addEventListener('input', () => {
+          debouncedCompare();
+        });
+      });
+    }
 
     if (mode === BOOK_FORM.MODE.ADD_BOOK && getRecommendBookHandler) {
       nameInput.addEventListener(
@@ -317,7 +356,7 @@ export default class BookListView {
 
     nameInput.addEventListener('blur', () => {
       this.hideRecommendationBooks(booksRecommendation);
-      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
+      validateField(nameInput, 'title', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
     });
 
     let imageUrl = book.imageUrl;
@@ -330,7 +369,7 @@ export default class BookListView {
       return imageUrl;
     };
 
-    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, uploadBtn, positiveButton };
+    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, hiddenFileInput, uploadBtn, positiveButton };
     const fileChangeHandlers = { getImageUrlHandler, setImageUrl };
     const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
     const formSubmitHandlers = { getImageUrl, saveHandler };

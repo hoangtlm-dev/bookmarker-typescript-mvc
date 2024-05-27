@@ -23,7 +23,7 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
       <div class="form-content">
         <div class="input-group book-name">
           <label for="book-name" class="input-label text-sub-heading">Book name</label>
-          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="name" data-field-validate="Book's name" value="${title}"/>
+          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="title" data-field-validate="Book's name" value="${title}"/>
           <p class="text-description text-error error-message"></p>
         </div>
         <div class="input-group book-author">
@@ -42,10 +42,11 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
             <img src=${uploadIcon} alt="upload" />
             <span class="upload-text text-sub-heading text-light">Upload</span>
           </button>
-          <input id=${fileInputId} accept="image/*" type="file" class="input-box" name="book-image" data-field-name="image" data-field-validate="Book's image" value="${imageUrl}"/>
+          <input id=${fileInputId} accept="image/*" type="file"/>
+          <input type="hidden" class="input-box" name="book-image" data-field-name="imageUrl" data-field-validate="Book's image" value="${imageUrl}"/>
           <div class="book-preview">
             <span class="text-description book-name-preview"></span>
-            <img class="book-img-preview" src="${imageUrl}" alt="${name}"/>
+            <img class="book-img-preview" src="${imageUrl}" alt="${title}"/>
           </div>
           <p class="text-description text-error error-message"></p>
         </div>
@@ -56,8 +57,8 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
         </div>
       </div>
       <div class="form-action">
-        <button id=${negativeButtonId} type="button" class="btn btn-cancel btn-action text-sub-heading text-light">${negativeText}</button>
-        <button id=${positiveButtonId} type="submit" class="btn btn-secondary btn-action text-sub-heading text-light">${positiveText}</button>
+        <button id=${negativeButtonId} type="button" class="btn btn-cancel btn-action text-sub-heading text-light btn-cancel">${negativeText}</button>
+        <button id=${positiveButtonId} type="submit" class="btn btn-secondary btn-action text-sub-heading text-light btn-save">${positiveText}</button>
       </div>
     </form>
   `;

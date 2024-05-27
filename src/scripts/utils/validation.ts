@@ -1,7 +1,7 @@
 import { VALIDATION } from '../constants';
 
 type ValidationRule = {
-  name: {
+  title: {
     isRequired: boolean;
     maxLength: number;
   };
@@ -24,7 +24,7 @@ type ValidationRule = {
 export type ValidationField = keyof ValidationRule;
 
 const rules: ValidationRule = {
-  name: {
+  title: {
     isRequired: true,
     maxLength: 120,
   },

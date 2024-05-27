@@ -23,6 +23,7 @@ export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;
 export type FileChangeOptionElements = {
   bookNamePreview: HTMLElement;
   bookImgPreview: HTMLImageElement;
+  hiddenFileInput: HTMLInputElement;
   uploadBtn: HTMLButtonElement;
   positiveButton: HTMLButtonElement;
 };

@@ -21,3 +21,11 @@ export type RecommendBook = {
   categories: string[];
   language: 'en' | 'vi';
 };
+
+export type CompareBook = {
+  title: string;
+  authors: string;
+  publishedDate: string;
+  imageUrl: string;
+  description: string;
+};

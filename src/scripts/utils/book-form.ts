@@ -42,12 +42,27 @@ export const createBookFormModal = (book: Book, formTitle: string) => {
   return bookFormModal;
 };
 
+export const getCurrentFormData = (
+  inputElements: NodeListOf<HTMLInputElement>,
+  fileChangeOptionElements?: FileChangeOptionElements,
+  fileChangeHandlers?: FileChangeHandlers,
+) => {
+  const currentFormData: { [key: string]: string } = {};
+  inputElements.forEach((input) => {
+    if (input.type === 'file' && fileChangeOptionElements && fileChangeHandlers) {
+      handleFileInputChange(input, fileChangeOptionElements, fileChangeHandlers);
+    }
+    currentFormData[input.getAttribute('data-field-name') as string] = input.value;
+  });
+  return currentFormData;
+};
+
 export const handleFileInputChange = (
   fileInput: HTMLInputElement,
   fileChangeOptionElements: FileChangeOptionElements,
   fileChangeHandlers: FileChangeHandlers,
 ) => {
-  const { bookNamePreview, bookImgPreview, positiveButton, uploadBtn } = fileChangeOptionElements;
+  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton, uploadBtn } = fileChangeOptionElements;
   const { getImageUrlHandler, setImageUrl } = fileChangeHandlers;
 
   fileInput.addEventListener('change', async (event) => {
@@ -67,6 +82,7 @@ export const handleFileInputChange = (
 
     const imageUrl = await getImageUrlHandler(formData);
     setImageUrl(imageUrl);
+    hiddenFileInput.value = imageUrl;
     positiveButton.disabled = false;
   });
 };
@@ -152,13 +168,6 @@ export const handleFormSubmit = (
     });
 
     if (!isFormValid) return;
-
-    // Check if the original data is the same as the submitted data
-    const attributesToCheck: (keyof BookFormData)[] = ['title', 'description', 'authors', 'imageUrl', 'publishedDate'];
-
-    if (isDataEqual(originalData, submitData, attributesToCheck)) {
-      return;
-    }
 
     saveHandler(submitData);
 
