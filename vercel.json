@@ -1,6 +1,6 @@
 {
   "routes": [
     { "src": "/", "dest": "/" },
-    { "src": "/book-details(?*)", "dest": "/" }
+    { "src": "/book-details.*", "dest": "/" }
   ]
 }
