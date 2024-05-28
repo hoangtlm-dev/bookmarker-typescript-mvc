@@ -1,6 +1,1 @@
-{
-  "routes": [
-    { "src": "/index.html", "dest": "/index.html" },
-    { "src": "^/book-details.*", "dest": "/index.html" }
-  ]
-}
+
