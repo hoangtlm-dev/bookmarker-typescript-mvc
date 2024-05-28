@@ -105,7 +105,7 @@ export default class BookListController {
   handleSearchBook = (keyword: string) => {
     const searchTerm = keyword.trim().toLowerCase();
 
-    const filteredBooks = this.renderBooks.filter((book) => book.title.toLowerCase().includes(searchTerm));
+    const filteredBooks = this.renderBooks.filter((book) => book.name.toLowerCase().includes(searchTerm));
 
     this.updateBookList(filteredBooks);
   };
@@ -115,12 +115,12 @@ export default class BookListController {
 
     switch (sortStatus) {
       case SORT.STATUS.ASCENDING: {
-        const ascSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.ASCENDING);
+        const ascSortedBooks = sortArray(this.renderBooks, SORT.KEY.NAME, SORT.STATUS.ASCENDING);
         this.renderBooks = [...ascSortedBooks];
         break;
       }
       case SORT.STATUS.DESCENDING: {
-        const descSortedBooks = sortArray(this.renderBooks, SORT.KEY.TITLE, SORT.STATUS.DESCENDING);
+        const descSortedBooks = sortArray(this.renderBooks, SORT.KEY.NAME, SORT.STATUS.DESCENDING);
         this.renderBooks = [...descSortedBooks];
         break;
       }

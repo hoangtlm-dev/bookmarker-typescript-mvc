@@ -27,7 +27,6 @@ export type AddFormHandlers = {
 export type EditFormHandlers = {
   getBookHandler: GetBookHandler;
   getImageUrlHandler: GetImageUrlHandler;
-  getRecommendBookHandler: GetRecommendBookHandler;
   editBookHandler: EditBookHandler;
 };
 

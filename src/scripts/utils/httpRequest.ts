@@ -27,6 +27,7 @@ export const httpRequest = async <T, U>(url: string, method: string, data?: T): 
     return responseData as U;
   } else {
     const errorMessage = HTTP_REQUEST.ERROR_MESSAGES[response.status] || 'An unexpected error occurred';
+    console.log(errorMessage);
     throw new Error(errorMessage);
   }
 };

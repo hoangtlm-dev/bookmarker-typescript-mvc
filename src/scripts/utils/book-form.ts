@@ -6,10 +6,9 @@ import {
   Book,
   BookFormData,
   BookFormMode,
-  FileChangeHandlers,
   FileChangeOptionElements,
-  FormSubmitHandlers,
   FormSubmitOptionElements,
+  GetImageUrlHandler,
 } from '@/types';
 
 //Templates
@@ -24,6 +23,7 @@ import {
   showModal,
   showToast,
   updateDOMElement,
+  removeDOMElement,
   validateField,
   validateForm,
 } from '@/utils';
@@ -45,45 +45,75 @@ export const createBookFormModal = (book: Book, formTitle: string) => {
 export const getCurrentFormData = (
   inputElements: NodeListOf<HTMLInputElement>,
   fileChangeOptionElements?: FileChangeOptionElements,
-  fileChangeHandlers?: FileChangeHandlers,
+  getImageUrlHandler?: GetImageUrlHandler,
 ) => {
   const currentFormData: { [key: string]: string } = {};
   inputElements.forEach((input) => {
-    if (input.type === 'file' && fileChangeOptionElements && fileChangeHandlers) {
-      handleFileInputChange(input, fileChangeOptionElements, fileChangeHandlers);
+    if (input.type === 'file' && fileChangeOptionElements && getImageUrlHandler) {
+      handleFileInputChange(input, fileChangeOptionElements, getImageUrlHandler);
     }
     currentFormData[input.getAttribute('data-field-name') as string] = input.value;
   });
   return currentFormData;
 };
 
+export const clearFileInputData = (fileInput: HTMLInputElement, fileChangeOptionElements: FileChangeOptionElements) => {
+  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton, uploadBtn } = fileChangeOptionElements;
+
+  hiddenFileInput.value = '';
+  bookNamePreview.innerHTML = '';
+  bookImgPreview.src = '';
+  bookImgPreview.style.width = '0';
+  bookImgPreview.style.height = '0';
+  uploadBtn.style.display = 'none';
+  positiveButton.disabled = true;
+};
+
+export const updateFileInputData = (
+  file: File,
+  imageUrl: string,
+  fileChangeOptionElements: FileChangeOptionElements,
+) => {
+  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton } = fileChangeOptionElements;
+
+  bookNamePreview.innerHTML = `Selected: ${file.name}`;
+  bookImgPreview.src = URL.createObjectURL(file);
+  bookImgPreview.style.width = '96px';
+  bookImgPreview.style.height = '116px';
+
+  hiddenFileInput.value = imageUrl;
+
+  if (hiddenFileInput) {
+    validateField(hiddenFileInput, 'imageUrl', imageUrl, "Book's image");
+  }
+
+  positiveButton.disabled = false;
+};
+
 export const handleFileInputChange = (
   fileInput: HTMLInputElement,
   fileChangeOptionElements: FileChangeOptionElements,
-  fileChangeHandlers: FileChangeHandlers,
+  getImageUrlHandler: GetImageUrlHandler,
 ) => {
-  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton, uploadBtn } = fileChangeOptionElements;
-  const { getImageUrlHandler, setImageUrl } = fileChangeHandlers;
-
   fileInput.addEventListener('change', async (event) => {
-    positiveButton.disabled = true;
+    const spinner = createElement('div', 'spinner');
     const target = event.target as HTMLInputElement;
-    if (target.files === null) return;
-    const file = target.files[0];
 
-    bookNamePreview.innerHTML = `Selected: ${file.name}`;
-    bookImgPreview.src = URL.createObjectURL(file);
-    bookImgPreview.style.width = '96px';
-    bookImgPreview.style.height = '116px';
-    uploadBtn.style.opacity = '0';
+    if (target.files === null || target.files.length === 0) {
+      return;
+    }
+    const file = target.files[0];
 
     const formData = new FormData();
     formData.append('image', file);
 
+    clearFileInputData(fileInput, fileChangeOptionElements);
+    updateDOMElement(fileInput.parentElement as HTMLElement, spinner);
+
     const imageUrl = await getImageUrlHandler(formData);
-    setImageUrl(imageUrl);
-    hiddenFileInput.value = imageUrl;
-    positiveButton.disabled = false;
+
+    updateFileInputData(file, imageUrl, fileChangeOptionElements);
+    removeDOMElement(fileInput.parentElement as HTMLElement, spinner);
   });
 };
 
@@ -117,9 +147,8 @@ export const handleFormSubmit = (
   mode: BookFormMode,
   originalData: BookFormData,
   formSubmitOptionElements: FormSubmitOptionElements,
-  formSubmitHandlers: FormSubmitHandlers,
+  saveHandler: (input: Omit<Book, 'id'>) => void,
 ) => {
-  const { getImageUrl, saveHandler } = formSubmitHandlers;
   const { inputElements, bookFormModal, mainContent } = formSubmitOptionElements;
 
   form.addEventListener('submit', (event) => {
@@ -134,7 +163,7 @@ export const handleFormSubmit = (
 
     const publishedDate = formData.get('book-published-date') as string;
     const description = formData.get('book-description') as string;
-    const imageUrl = getImageUrl();
+    const imageUrl = formData.get('book-image') as string;
     const currentTime = new Date().getTime().toString();
 
     const submitData: Omit<Book, 'id'> = {
@@ -160,7 +189,7 @@ export const handleFormSubmit = (
       const inputField = input.getAttribute('data-field-name') as ValidationField;
       const errorField = input.getAttribute('data-field-validate') as string;
       const error = validateForm(inputField, validateValue, errorField);
-      console.log(inputField);
+
       if (error) {
         isFormValid = false;
         appendErrorMessage(input, error);

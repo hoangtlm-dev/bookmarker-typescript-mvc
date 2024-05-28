@@ -28,7 +28,9 @@ import {
   generateSkeletonBookDetails,
   generateRequestError,
 } from '../templates';
-import { Book, DeleteBookHandler, DisplayFormHandler, EditBookHandler, GetImageUrlHandler } from '@/types';
+
+//Types
+import { Book, BookFormMode, DeleteBookHandler, EditFormHandlers, ShowFormHandlers } from '@/types';
 
 export default class BookDetailsView {
   private mainContent: HTMLDivElement;
@@ -57,62 +59,49 @@ export default class BookDetailsView {
     updateDOMElement(this.mainContent, bookDetailsWrapper);
   }
 
-  showBookForm = (
-    book: Book,
-    isEdit: boolean,
-    getImageUrlHandler: GetImageUrlHandler,
-    saveCallback: (input: Omit<Book, 'id'>) => void,
-  ) => {
-    const formTitle = createBookFormTitle(book, isEdit);
+  showBookForm = (book: Book, mode: BookFormMode, showFormHandlers: ShowFormHandlers) => {
+    const { getImageUrlHandler, saveHandler } = showFormHandlers;
+
+    const formTitle = createBookFormTitle(book, mode);
     const bookFormModal = createBookFormModal(book, formTitle);
     this.mainContent.appendChild(bookFormModal);
 
+    const mainContent = this.mainContent;
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
     const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
+    const hiddenFileInput = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
 
-    let imageUrl = book.imageUrl;
+    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, hiddenFileInput, uploadBtn, positiveButton };
+    const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
 
-    const setImageUrl = (url: string) => {
-      imageUrl = url;
-    };
-
-    const getImageUrl = () => {
-      return imageUrl;
-    };
-
-    handleFileInputChange(
-      fileInput,
-      bookNamePreview,
-      bookImgPreview,
-      uploadBtn,
-      positiveButton,
-      getImageUrlHandler,
-      setImageUrl,
-    );
+    handleFileInputChange(fileInput, fileChangeOptionElements, getImageUrlHandler);
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
-    handleFormSubmit(form, inputElements, getImageUrl, isEdit, book, saveCallback, bookFormModal, this.mainContent);
+    handleFormSubmit(form, mode, book, formSubmitOptionElements, saveHandler);
   };
 
-  bindEditBook = (
-    displayFormHandler: DisplayFormHandler,
-    getImageUrlHandler: GetImageUrlHandler,
-    editHandler: EditBookHandler,
-  ) => {
+  bindEditBook = (editFormHandlers: EditFormHandlers) => {
+    const { getBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
       const btnEdit = (event.target as HTMLElement).closest('.btn-edit');
 
       if (btnEdit) {
-        const selectedBook = await displayFormHandler(parseInt(this.bookId));
-        this.showBookForm(selectedBook, true, getImageUrlHandler, async (formData) => {
-          editHandler(parseInt(this.bookId), formData);
-        });
+        const selectedBook = await getBookHandler(parseInt(this.bookId));
+
+        const showFormHandlers: ShowFormHandlers = {
+          getImageUrlHandler,
+          saveHandler: async (data: Omit<Book, 'id'>) => {
+            editBookHandler(parseInt(this.bookId), data);
+          },
+        };
+
+        this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
       }
     });
   };

@@ -12,6 +12,7 @@
 @import url('../../../styles/components/toast.css');
 @import url('../../../styles/components/book-form.css');
 @import url('../../../styles/components/request-error.css');
+@import url('../../../styles/components/spinner.css');
 
 /* Layouts */
 @import url('../../../styles/layouts/common/container.css');

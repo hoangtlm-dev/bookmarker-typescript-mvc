@@ -1,24 +1,34 @@
 import BookModel from '@/models/book';
-import { Book } from '@/types';
 import BookDetailsView from '@/views/book-details';
+
+import { Book, EditFormHandlers } from '@/types';
+
 export default class BookDetailsController {
   private bookModel: BookModel;
   private bookDetailsView: BookDetailsView;
+  private editFormHandlers: EditFormHandlers;
 
   constructor(bookModel: BookModel, bookDetailsView: BookDetailsView) {
     this.bookModel = bookModel;
     this.bookDetailsView = bookDetailsView;
+
+    this.editFormHandlers = {
+      getBookHandler: this.handleGetBookById,
+      getImageUrlHandler: this.handleGetImageUrl,
+      editBookHandler: this.handleEditBook,
+    };
   }
 
   async init() {
     await this.displayBookDetails();
-    this.bookDetailsView.bindEditBook(this.handleGetBookById, this.handleGetImageUrl, this.handleEditBook);
+    this.bookDetailsView.bindEditBook(this.editFormHandlers);
     this.bookDetailsView.bindDeleteBook(this.handleDeleteBook);
   }
 
   displayBookDetails = async () => {
     const bookId = window.location.search.slice(4);
     this.bookDetailsView.displaySkeletonBookDetails();
+
     try {
       const response = await this.bookModel.getBookById(parseInt(bookId));
       this.bookDetailsView.getBookDetails(response);
@@ -48,8 +58,9 @@ export default class BookDetailsController {
 
   handleDeleteBook = async (bookId: number) => {
     await this.bookModel.deleteBook(bookId);
+
     setTimeout(() => {
       window.location.href = '/';
-    }, 3000);
+    }, 2000);
   };
 }

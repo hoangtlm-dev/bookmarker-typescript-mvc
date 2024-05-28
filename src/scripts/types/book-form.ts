@@ -3,7 +3,6 @@ import { BOOK_FORM } from '@/constants';
 
 //Types
 import { Book } from './book';
-import { GetImageUrlHandler } from './handler';
 
 export type BookOptions = {
   formTitle: string;
@@ -28,19 +27,9 @@ export type FileChangeOptionElements = {
   positiveButton: HTMLButtonElement;
 };
 
-export type FileChangeHandlers = {
-  getImageUrlHandler: GetImageUrlHandler;
-  setImageUrl: (url: string) => void;
-};
-
 export type FormSubmitOptionElements = {
   inputElements: NodeListOf<HTMLInputElement>;
   bookFormModal: HTMLElement;
   positiveButton: HTMLButtonElement;
   mainContent: HTMLElement;
-};
-
-export type FormSubmitHandlers = {
-  getImageUrl: () => string;
-  saveHandler: (input: Omit<Book, 'id'>) => void;
 };

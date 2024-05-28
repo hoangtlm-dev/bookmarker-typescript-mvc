@@ -6,12 +6,12 @@ import { timeFormat } from '../../utils/time-control';
 import { Book } from '@/types';
 
 export const generateBookDetails = (book: Book) => {
-  const { title, description, authors, imageUrl, createdAt, updatedAt } = book;
+  const { name, description, authors, imageUrl, createdAt, updatedAt } = book;
 
   return `
     <div class="book-details-image-action">
       <figure class="book-details-image-frame">
-        <img loading="lazy" src=${imageUrl} alt=${title} class="book-details-image"/>
+        <img loading="lazy" src=${imageUrl} alt=${name} class="book-details-image"/>
       </figure>
       <div class="book-details-action">
         <button class="btn btn-square btn-secondary btn-back">
@@ -29,7 +29,7 @@ export const generateBookDetails = (book: Book) => {
       </div>
     </div>
     <div class="book-details-info">
-      <h2 class="text-heading book-details-heading">${title}</h2>
+      <h2 class="text-heading book-details-heading">${name}</h2>
       <p class="text-description book-details-description">${description}</p>
       <ul class="book-details-info-list">
         <li class="book-details-info-item">
