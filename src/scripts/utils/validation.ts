@@ -12,7 +12,7 @@ type ValidationRule = {
     isRequired: boolean;
     isFutureDate: (value: string) => boolean | '';
   };
-  image: {
+  imageUrl: {
     isRequired: boolean;
   };
   description: {
@@ -35,7 +35,7 @@ const rules: ValidationRule = {
     isRequired: true,
     isFutureDate: (value: string) => value && new Date(value) > new Date(),
   },
-  image: {
+  imageUrl: {
     isRequired: true,
   },
   description: {
@@ -70,6 +70,7 @@ export const removeErrorMessage = <T extends HTMLElement>(inputElement: T) => {
 // Validate all fields of form
 export const validateForm = (fieldName: ValidationField, value: string, validateFieldName: string) => {
   const fieldRules = rules[fieldName];
+
   let errorMessage = '';
 
   // Check required field

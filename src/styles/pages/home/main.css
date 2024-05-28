@@ -13,6 +13,7 @@
 @import url('../../../styles/components/toast.css');
 @import url('../../../styles/components/confirm-dialog.css');
 @import url('../../../styles/components/request-error.css');
+@import url('../../../styles/components/spinner.css');
 
 /* Layouts */
 @import url('../../../styles/layouts/common/container.css');

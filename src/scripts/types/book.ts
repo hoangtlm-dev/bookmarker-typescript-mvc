@@ -1,6 +1,6 @@
 export type Book = {
   id: number;
-  title: string;
+  name: string;
   description: string;
   authors: string[];
   imageUrl: string;
@@ -20,4 +20,12 @@ export type RecommendBook = {
   pageCount: number;
   categories: string[];
   language: 'en' | 'vi';
+};
+
+export type CompareBook = {
+  name: string;
+  authors: string;
+  publishedDate: string;
+  imageUrl: string;
+  description: string;
 };

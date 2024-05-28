@@ -18,3 +18,18 @@ export type BookOptions = {
 export type BookFormMode = (typeof BOOK_FORM.MODE)[keyof typeof BOOK_FORM.MODE];
 
 export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;
+
+export type FileChangeOptionElements = {
+  bookNamePreview: HTMLElement;
+  bookImgPreview: HTMLImageElement;
+  hiddenFileInput: HTMLInputElement;
+  uploadBtn: HTMLButtonElement;
+  positiveButton: HTMLButtonElement;
+};
+
+export type FormSubmitOptionElements = {
+  inputElements: NodeListOf<HTMLInputElement>;
+  bookFormModal: HTMLElement;
+  positiveButton: HTMLButtonElement;
+  mainContent: HTMLElement;
+};

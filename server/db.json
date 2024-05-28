@@ -1,7 +1,7 @@
 {
   "books": [
     {
-      "title": "HTML",
+      "name": "HTML",
       "authors": [
         "Robert C.Martin"
       ],
@@ -13,21 +13,8 @@
       "id": 1
     },
     {
-      "id": 2,
-      "title": "C Programming",
-      "description": "The Ultimate Way to Learn the Fundamentals of the C Language",
-      "authors": [
-        "Harry H. Chaudhary"
-      ],
-      "imageUrl": "http://books.google.com/books/content?id=7LIABAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
-      "publishedDate": "2014-07-07",
-      "createdAt": "1680658968254",
-      "updatedAt": "1680658968254",
-      "deletedAt": null
-    },
-    {
       "id": 3,
-      "title": "Computer Organization and Architecture",
+      "name": "Computer Organization and Architecture",
       "description": "Designing for Performance",
       "authors": [
         "William Stallings"
@@ -40,7 +27,7 @@
     },
     {
       "id": 4,
-      "title": "Computer Science",
+      "name": "Computer Science",
       "description": [
         "A Concise Introduction"
       ],
@@ -55,7 +42,7 @@
     },
     {
       "id": 5,
-      "title": "Java Programming for Beginners",
+      "name": "Java Programming for Beginners",
       "description": "Learn the Fundamentals of Programming with Java",
       "authors": [
         "Mark Lassoff"
@@ -68,7 +55,7 @@
     },
     {
       "id": 6,
-      "title": "Object-oriented Programming with Java",
+      "name": "Object-oriented Programming with Java",
       "description": "Appealing to programmers and non-programmers alike, this complete introduction to Java shows students how to use this versatile and popular object-oriented programming language as a primary tool in many different aspects of their programming work (not just for creating programs with graphical content within Web pages), and includes complete descriptions of the fundamental elements of Java with step-by-step instructions on how to compile and run a program. ",
       "authors": [
         "David J. Barnes"
@@ -81,7 +68,7 @@
     },
     {
       "id": 7,
-      "title": "Guide to HTML, JavaScript and PHP",
+      "name": "Guide to HTML, JavaScript and PHP",
       "description": "For Scientists and Engineers",
       "authors": [
         "David R. Brooks"
@@ -94,7 +81,7 @@
     },
     {
       "id": 8,
-      "title": "HTML and CSS",
+      "name": "HTML and CSS",
       "description": "Design and Build Websites",
       "authors": [
         "Jon Duckett"
@@ -107,7 +94,7 @@
     },
     {
       "id": 9,
-      "title": "Decoding JavaScript",
+      "name": "Decoding JavaScript",
       "description": "A Simple Guide for the Not-so-Simple JavaScript Concepts, Libraries, Tools, and Frameworks (English Edition)",
       "authors": [
         "Rushabh Mulraj Shah"
@@ -120,7 +107,7 @@
     },
     {
       "id": 10,
-      "title": "Effective TypeScript",
+      "name": "Effective TypeScript",
       "description": "62 Specific Ways to Improve Your TypeScript",
       "authors": [
         "Dan Vanderkam"
@@ -132,7 +119,7 @@
       "deletedAt": null
     },
     {
-      "title": "The TypeScript Workshop",
+      "name": "The TypeScript Workshop",
       "authors": [
         "Ben Grynhaus",
         "Jordan Hudgens",
@@ -149,7 +136,7 @@
     },
     {
       "id": 12,
-      "title": "React Js",
+      "name": "React Js",
       "description": "Hands-On Full Stack Web Development Using React Js, 2nd Edition",
       "authors": [
         "Nln Lnc",
@@ -163,7 +150,7 @@
     },
     {
       "id": 13,
-      "title": "React and React Native",
+      "name": "React and React Native",
       "description": "A Complete Hands-on Guide to Modern Web and Mobile Development with React.js",
       "authors": [
         "Adam Boduch",
@@ -177,7 +164,7 @@
     },
     {
       "id": 14,
-      "title": "GO Programming in easy steps",
+      "name": "GO Programming in easy steps",
       "description": "Discover Google’s Go language (golang)",
       "authors": [
         "Mike McGrath"
@@ -190,7 +177,7 @@
     },
     {
       "id": 15,
-      "title": "Learning Node.js",
+      "name": "Learning Node.js",
       "description": "",
       "authors": [
         "Marc Wandschneider"
@@ -203,7 +190,7 @@
     },
     {
       "id": 16,
-      "title": "Real-World Next.js",
+      "name": "Real-World Next.js",
       "description": "Build Scalable, High-performance, and Modern Web Applications Using Next.js, the React Framework for Production",
       "authors": [
         "Michele Riva"

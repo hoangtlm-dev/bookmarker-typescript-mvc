@@ -4,7 +4,7 @@ export const SORT = {
     DESCENDING: 'desc',
   },
   KEY: {
-    TITLE: 'title',
+    NAME: 'name',
     CREATED_AT: 'createdAt',
   },
 } as const;

@@ -2,7 +2,14 @@
 import { BOOK_FORM, TOAST } from '@/constants';
 
 //Types
-import { Book, BookFormData, BookFormMode, GetImageUrlHandler } from '@/types';
+import {
+  Book,
+  BookFormData,
+  BookFormMode,
+  FileChangeOptionElements,
+  FormSubmitOptionElements,
+  GetImageUrlHandler,
+} from '@/types';
 
 //Templates
 import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templates';
@@ -16,13 +23,14 @@ import {
   showModal,
   showToast,
   updateDOMElement,
+  removeDOMElement,
   validateField,
   validateForm,
 } from '@/utils';
 
 export const createBookFormTitle = (book: Book, mode: BookFormMode) => {
   return mode === BOOK_FORM.MODE.EDIT_BOOK
-    ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.title)
+    ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.name)
     : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
 };
 
@@ -34,33 +42,78 @@ export const createBookFormModal = (book: Book, formTitle: string) => {
   return bookFormModal;
 };
 
+export const getCurrentFormData = (
+  inputElements: NodeListOf<HTMLInputElement>,
+  fileChangeOptionElements?: FileChangeOptionElements,
+  getImageUrlHandler?: GetImageUrlHandler,
+) => {
+  const currentFormData: { [key: string]: string } = {};
+  inputElements.forEach((input) => {
+    if (input.type === 'file' && fileChangeOptionElements && getImageUrlHandler) {
+      handleFileInputChange(input, fileChangeOptionElements, getImageUrlHandler);
+    }
+    currentFormData[input.getAttribute('data-field-name') as string] = input.value;
+  });
+  return currentFormData;
+};
+
+export const clearFileInputData = (fileInput: HTMLInputElement, fileChangeOptionElements: FileChangeOptionElements) => {
+  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton, uploadBtn } = fileChangeOptionElements;
+
+  hiddenFileInput.value = '';
+  bookNamePreview.innerHTML = '';
+  bookImgPreview.src = '';
+  bookImgPreview.style.width = '0';
+  bookImgPreview.style.height = '0';
+  uploadBtn.style.display = 'none';
+  positiveButton.disabled = true;
+};
+
+export const updateFileInputData = (
+  file: File,
+  imageUrl: string,
+  fileChangeOptionElements: FileChangeOptionElements,
+) => {
+  const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton } = fileChangeOptionElements;
+
+  bookNamePreview.innerHTML = `Selected: ${file.name}`;
+  bookImgPreview.src = URL.createObjectURL(file);
+  bookImgPreview.style.width = '96px';
+  bookImgPreview.style.height = '116px';
+
+  hiddenFileInput.value = imageUrl;
+
+  if (hiddenFileInput) {
+    validateField(hiddenFileInput, 'imageUrl', imageUrl, "Book's image");
+  }
+
+  positiveButton.disabled = false;
+};
+
 export const handleFileInputChange = (
   fileInput: HTMLInputElement,
-  bookNamePreview: HTMLElement,
-  bookImgPreview: HTMLImageElement,
-  uploadBtn: HTMLButtonElement,
-  positiveButton: HTMLButtonElement,
+  fileChangeOptionElements: FileChangeOptionElements,
   getImageUrlHandler: GetImageUrlHandler,
-  setImageUrl: (url: string) => void,
 ) => {
   fileInput.addEventListener('change', async (event) => {
-    positiveButton.disabled = true;
+    const spinner = createElement('div', 'spinner');
     const target = event.target as HTMLInputElement;
-    if (target.files === null) return;
-    const file = target.files[0];
 
-    bookNamePreview.innerHTML = `Selected: ${file.name}`;
-    bookImgPreview.src = URL.createObjectURL(file);
-    bookImgPreview.style.width = '96px';
-    bookImgPreview.style.height = '116px';
-    uploadBtn.style.opacity = '0';
+    if (target.files === null || target.files.length === 0) {
+      return;
+    }
+    const file = target.files[0];
 
     const formData = new FormData();
     formData.append('image', file);
 
+    clearFileInputData(fileInput, fileChangeOptionElements);
+    updateDOMElement(fileInput.parentElement as HTMLElement, spinner);
+
     const imageUrl = await getImageUrlHandler(formData);
-    setImageUrl(imageUrl);
-    positiveButton.disabled = false;
+
+    updateFileInputData(file, imageUrl, fileChangeOptionElements);
+    removeDOMElement(fileInput.parentElement as HTMLElement, spinner);
   });
 };
 
@@ -91,31 +144,30 @@ export const isDataEqual = <T>(obj1: T, obj2: T, attributes: (keyof T)[]) => {
 
 export const handleFormSubmit = (
   form: HTMLFormElement,
-  inputElements: NodeListOf<HTMLInputElement>,
-  getImageUrl: () => string,
   mode: BookFormMode,
   originalData: BookFormData,
-  saveCallback: (input: Omit<Book, 'id'>) => void,
-  bookFormModal: HTMLElement,
-  mainContent: HTMLElement,
+  formSubmitOptionElements: FormSubmitOptionElements,
+  saveHandler: (input: Omit<Book, 'id'>) => void,
 ) => {
+  const { inputElements, bookFormModal, mainContent } = formSubmitOptionElements;
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const formData = new FormData(form);
 
-    const title = formData.get('book-name') as string;
+    const name = formData.get('book-name') as string;
     const authors = formData.get('book-authors') as string;
     if (authors === null) return;
     const authorList = authors.split(',').map((author) => author.trim());
 
     const publishedDate = formData.get('book-published-date') as string;
     const description = formData.get('book-description') as string;
-    const imageUrl = getImageUrl();
+    const imageUrl = formData.get('book-image') as string;
     const currentTime = new Date().getTime().toString();
 
     const submitData: Omit<Book, 'id'> = {
-      title,
+      name,
       authors: authorList,
       publishedDate,
       description,
@@ -144,15 +196,9 @@ export const handleFormSubmit = (
       }
     });
 
-    const attributesToCheck: (keyof BookFormData)[] = ['title', 'description', 'authors', 'imageUrl', 'publishedDate'];
-
-    if (isDataEqual(originalData, submitData, attributesToCheck)) {
-      return;
-    }
-
     if (!isFormValid) return;
 
-    saveCallback(submitData);
+    saveHandler(submitData);
 
     hideModal(bookFormModal);
 
