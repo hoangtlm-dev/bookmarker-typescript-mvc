@@ -297,7 +297,7 @@ export default class BookListView {
       createElement<HTMLUListElement>('ul', 'book-recommendation-list');
 
     const originalData: CompareBook = {
-      title: book.title,
+      name: book.name,
       authors: book.authors.join(','),
       publishedDate: book.publishedDate,
       imageUrl: book.imageUrl,
@@ -356,7 +356,7 @@ export default class BookListView {
 
     nameInput.addEventListener('blur', () => {
       this.hideRecommendationBooks(booksRecommendation);
-      validateField(nameInput, 'title', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
+      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
     });
 
     let imageUrl = book.imageUrl;

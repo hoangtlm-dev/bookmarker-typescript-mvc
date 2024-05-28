@@ -30,7 +30,7 @@ import {
 
 export const createBookFormTitle = (book: Book, mode: BookFormMode) => {
   return mode === BOOK_FORM.MODE.EDIT_BOOK
-    ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.title)
+    ? BOOK_FORM.FORM_TITLE.EDIT_BOOK(book.name)
     : BOOK_FORM.FORM_TITLE.CREATE_BOOK;
 };
 
@@ -127,7 +127,7 @@ export const handleFormSubmit = (
 
     const formData = new FormData(form);
 
-    const title = formData.get('book-name') as string;
+    const name = formData.get('book-name') as string;
     const authors = formData.get('book-authors') as string;
     if (authors === null) return;
     const authorList = authors.split(',').map((author) => author.trim());
@@ -138,7 +138,7 @@ export const handleFormSubmit = (
     const currentTime = new Date().getTime().toString();
 
     const submitData: Omit<Book, 'id'> = {
-      title,
+      name,
       authors: authorList,
       publishedDate,
       description,
@@ -160,7 +160,7 @@ export const handleFormSubmit = (
       const inputField = input.getAttribute('data-field-name') as ValidationField;
       const errorField = input.getAttribute('data-field-validate') as string;
       const error = validateForm(inputField, validateValue, errorField);
-
+      console.log(inputField);
       if (error) {
         isFormValid = false;
         appendErrorMessage(input, error);
