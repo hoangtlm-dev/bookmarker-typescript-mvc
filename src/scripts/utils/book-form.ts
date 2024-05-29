@@ -57,7 +57,7 @@ export const getCurrentFormData = (
   return currentFormData;
 };
 
-export const clearFileInputData = (fileInput: HTMLInputElement, fileChangeOptionElements: FileChangeOptionElements) => {
+export const clearFileInputData = (fileChangeOptionElements: FileChangeOptionElements) => {
   const { bookNamePreview, bookImgPreview, hiddenFileInput, positiveButton, uploadBtn } = fileChangeOptionElements;
 
   hiddenFileInput.value = '';
@@ -107,7 +107,7 @@ export const handleFileInputChange = (
     const formData = new FormData();
     formData.append('image', file);
 
-    clearFileInputData(fileInput, fileChangeOptionElements);
+    clearFileInputData(fileChangeOptionElements);
     updateDOMElement(fileInput.parentElement as HTMLElement, spinner);
 
     const imageUrl = await getImageUrlHandler(formData);

@@ -36,7 +36,6 @@ import {
   showModal,
   showToast,
   updateDOMElement,
-  validateField,
 } from '@/utils';
 
 // Templates
@@ -150,6 +149,21 @@ export default class BookListView {
           const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
           recommendBookItem.textContent = book.title;
           bookListWrapper.appendChild(recommendBookItem);
+
+          // Prevent blur event
+          recommendBookItem.addEventListener('mousedown', (event) => {
+            event.preventDefault(); //
+          });
+
+          recommendBookItem.addEventListener('click', (event) => {
+            const target = event.target as HTMLElement;
+
+            if (target.classList.contains('book-recommendation-item')) {
+              const selectedRecommendBook = books.find((book) => book.title === target.textContent);
+              console.log(selectedRecommendBook);
+              this.hideRecommendationBooks(bookListWrapper);
+            }
+          });
         }
       });
     }
@@ -309,7 +323,6 @@ export default class BookListView {
 
       const debouncedCompare = debounce(() => {
         const currentData = getCurrentFormData(inputElements);
-        console.log(currentData);
         const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
 
         if (!isSameData) {
@@ -344,14 +357,9 @@ export default class BookListView {
               this.hideRecommendationBooks(booksRecommendation);
             }
           }
-        }, 500),
+        }, DEBOUNCE.DELAY_TIME),
       );
     }
-
-    nameInput.addEventListener('blur', () => {
-      this.hideRecommendationBooks(booksRecommendation);
-      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
-    });
 
     const fileChangeOptionElements = { bookNamePreview, bookImgPreview, hiddenFileInput, uploadBtn, positiveButton };
     const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
