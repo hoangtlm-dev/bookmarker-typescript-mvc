@@ -140,7 +140,7 @@
 
 .book-form .btn-action {
   padding: 8px 12px;
-  min-width: 120px;
+  width: 100px;
   border-radius: var(--md-border-radius);
   text-align: center;
 }

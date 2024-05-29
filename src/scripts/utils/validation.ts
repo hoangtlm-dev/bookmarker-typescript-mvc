@@ -17,7 +17,6 @@ type ValidationRule = {
   };
   description: {
     isRequired: boolean;
-    maxLength: number;
   };
 };
 
@@ -40,7 +39,6 @@ const rules: ValidationRule = {
   },
   description: {
     isRequired: true,
-    maxLength: 1000,
   },
 };
 
@@ -77,11 +75,6 @@ export const validateForm = (fieldName: ValidationField, value: string, validate
   if (fieldRules.isRequired && !value.trim()) {
     errorMessage = VALIDATION.MESSAGE.IS_REQUIRED(validateFieldName);
   } else {
-    // Check max-length
-    if ('maxLength' in fieldRules && value.trim().length > fieldRules.maxLength) {
-      errorMessage = VALIDATION.MESSAGE.MAX_LENGTH(validateFieldName, fieldRules.maxLength);
-    }
-
     // Check future date
     if ('isFutureDate' in fieldRules && fieldRules.isFutureDate(value)) {
       errorMessage = VALIDATION.MESSAGE.IS_FUTURE_DATE(validateFieldName);
