@@ -37,7 +37,6 @@ export default class BookListController {
     this.editFormHandlers = {
       getBookHandler: this.handleGetBookById,
       getImageUrlHandler: this.handleGetImageUrl,
-      getRecommendBookHandler: this.handleGetRecommendBooks,
       editBookHandler: this.handleEditBook,
     };
   }

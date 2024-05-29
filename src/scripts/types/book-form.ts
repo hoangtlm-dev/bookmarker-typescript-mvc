@@ -19,6 +19,13 @@ export type BookFormMode = (typeof BOOK_FORM.MODE)[keyof typeof BOOK_FORM.MODE];
 
 export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;
 
+export type AutoFillFormOptionElements = {
+  nameInputElement: HTMLInputElement;
+  authorsInputElement: HTMLInputElement;
+  publishedDateInputElement: HTMLInputElement;
+  descriptionInputElement: HTMLInputElement;
+};
+
 export type FileChangeOptionElements = {
   bookNamePreview: HTMLElement;
   bookImgPreview: HTMLImageElement;

@@ -4,6 +4,7 @@ import { DEBOUNCE, PAGINATION, SORT, TOAST } from '@/constants';
 // Types
 import {
   AddFormHandlers,
+  AutoFillFormOptionElements,
   Book,
   BookFormMode,
   CompareBook,
@@ -36,7 +37,6 @@ import {
   showModal,
   showToast,
   updateDOMElement,
-  validateField,
 } from '@/utils';
 
 // Templates
@@ -153,6 +153,42 @@ export default class BookListView {
         }
       });
     }
+  };
+
+  autoFillRecommendBook = (
+    bookListElement: HTMLUListElement,
+    optionElements: AutoFillFormOptionElements,
+    recommendBooks: RecommendBook[],
+  ) => {
+    const { nameInputElement, authorsInputElement, publishedDateInputElement, descriptionInputElement } =
+      optionElements;
+
+    //Prevent blur when clicking on item
+    bookListElement.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+    });
+
+    bookListElement.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+
+      if (target.classList.contains('book-recommendation-item')) {
+        const selectedRecommendBook = recommendBooks.find((book) => book.title === target.textContent);
+
+        if (selectedRecommendBook) {
+          // Update form value
+          nameInputElement.value = selectedRecommendBook.title;
+          authorsInputElement.value = selectedRecommendBook.authors.toString();
+          publishedDateInputElement.value = selectedRecommendBook.publishedDate;
+          descriptionInputElement.value = selectedRecommendBook.description;
+        }
+
+        this.hideRecommendationBooks(bookListElement);
+      }
+    });
+
+    nameInputElement.addEventListener('blur', () => {
+      this.hideRecommendationBooks(bookListElement);
+    });
   };
 
   hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
@@ -283,9 +319,12 @@ export default class BookListView {
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
     const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
-    const nameInput = getElement<HTMLInputElement>('.input-box[name="book-name"]');
-    const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
-    const hiddenFileInput = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
+    const nameInputElement = getElement<HTMLInputElement>('.input-box[name="book-name"]');
+    const authorsInputElement = getElement<HTMLInputElement>('.input-box[name="book-authors"]');
+    const publishedDateInputElement = getElement<HTMLInputElement>('.input-box[name="book-published-date"]');
+    const descriptionInputElement = getElement<HTMLInputElement>('.input-box[name="book-description"]');
+    const fileInputElement = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
+    const hiddenFileInputElement = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
@@ -309,7 +348,6 @@ export default class BookListView {
 
       const debouncedCompare = debounce(() => {
         const currentData = getCurrentFormData(inputElements);
-        console.log(currentData);
         const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
 
         if (!isSameData) {
@@ -327,7 +365,7 @@ export default class BookListView {
     }
 
     if (mode === BOOK_FORM.MODE.ADD_BOOK && getRecommendBookHandler) {
-      nameInput.addEventListener(
+      nameInputElement.addEventListener(
         'input',
         debounce(async (event: Event) => {
           const target = event.target as HTMLInputElement;
@@ -339,24 +377,34 @@ export default class BookListView {
             if (!booksRecommendation.parentElement) {
               updateDOMElement(nameInputGroup, booksRecommendation);
             }
+
+            //autofill recommended book
+            const optionElements = {
+              nameInputElement,
+              authorsInputElement,
+              publishedDateInputElement,
+              descriptionInputElement,
+            };
+            this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks);
           } else {
             if (booksRecommendation.parentElement) {
               this.hideRecommendationBooks(booksRecommendation);
             }
           }
-        }, 500),
+        }, DEBOUNCE.DELAY_TIME),
       );
     }
 
-    nameInput.addEventListener('blur', () => {
-      this.hideRecommendationBooks(booksRecommendation);
-      validateField(nameInput, 'name', nameInput.value, nameInput.getAttribute('data-field-validate') as string);
-    });
-
-    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, hiddenFileInput, uploadBtn, positiveButton };
+    const fileChangeOptionElements = {
+      bookNamePreview,
+      bookImgPreview,
+      hiddenFileInputElement,
+      uploadBtn,
+      positiveButton,
+    };
     const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
 
-    handleFileInputChange(fileInput, fileChangeOptionElements, getImageUrlHandler);
+    handleFileInputChange(fileInputElement, fileChangeOptionElements, getImageUrlHandler);
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
     handleFormSubmit(form, mode, book, formSubmitOptionElements, saveHandler);
