@@ -9,6 +9,7 @@ import {
   FileChangeOptionElements,
   FormSubmitOptionElements,
   GetImageUrlHandler,
+  ValidationField,
 } from '@/types';
 
 //Templates
@@ -16,7 +17,6 @@ import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templat
 
 // Utils
 import {
-  ValidationField,
   appendErrorMessage,
   createElement,
   hideModal,
