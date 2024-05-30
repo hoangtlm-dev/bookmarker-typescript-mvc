@@ -31,11 +31,6 @@
   border-radius: var(--md-border-radius);
 }
 
-<<<<<<< HEAD
-.book-form .input-box,
-.book-form .input-box::placeholder,
-.book-form .input-box[type="date"] {
-=======
 .book-form .input-group.book-name {
   position: relative;
 }
@@ -77,17 +72,12 @@
 .book-form .input-box,
 .book-form .input-box::placeholder,
 .book-form .input-box[type='date'] {
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
   font-family: var(--font-regular);
   color: var(--light-blur-text-color);
 }
 
 .book-form .input-box::-webkit-calendar-picker-indicator {
-<<<<<<< HEAD
-  background-image: url("../../assets/icons/calendar.svg");
-=======
   background-image: url('../../assets/icons/calendar.svg');
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
   background-position: center;
   background-size: 16px 16px;
   background-repeat: no-repeat;
@@ -103,11 +93,7 @@
   height: 116px;
 }
 
-<<<<<<< HEAD
-.book-form .book-img-preview[src=""] {
-=======
 .book-form .book-img-preview[src=''] {
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
   display: none;
 }
 
@@ -129,11 +115,7 @@
   opacity: 0.8;
 }
 
-<<<<<<< HEAD
-.book-form .book-image .input-box {
-=======
 .book-form .book-image input[type='file'] {
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
   position: absolute;
   top: 0;
   bottom: 0;
@@ -158,23 +140,16 @@
 
 .book-form .btn-action {
   padding: 8px 12px;
-<<<<<<< HEAD
-  min-width: 120px;
-=======
   width: 100px;
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
   border-radius: var(--md-border-radius);
   text-align: center;
 }
 
-<<<<<<< HEAD
-=======
 .book-form .btn-save[disabled] {
   opacity: 0.6;
   pointer-events: none;
 }
 
->>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
 .book-form .book-preview {
   display: flex;
   align-items: center;
