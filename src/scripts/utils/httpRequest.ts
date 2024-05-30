@@ -11,7 +11,7 @@ export const httpRequest = async <T, U>(url: string, method: string, data?: T): 
     body: null,
   };
 
-  if (method !== HTTP_REQUEST.METHODS.GET || method !== HTTP_REQUEST.METHODS.DELETE) {
+  if (method !== HTTP_REQUEST.METHODS.GET && method !== HTTP_REQUEST.METHODS.DELETE) {
     if (data instanceof FormData) {
       options.body = data;
     } else {
@@ -26,6 +26,8 @@ export const httpRequest = async <T, U>(url: string, method: string, data?: T): 
     const responseData = await response.json();
     return responseData as U;
   } else {
-    throw new Error(HTTP_REQUEST.ERROR_SENDING);
+    const errorMessage = HTTP_REQUEST.ERROR_MESSAGES[response.status] || 'An unexpected error occurred';
+    console.log(errorMessage);
+    throw new Error(errorMessage);
   }
 };

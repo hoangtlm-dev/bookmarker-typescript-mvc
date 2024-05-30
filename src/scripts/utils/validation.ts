@@ -1,27 +1,5 @@
+import { ValidationField, ValidationRule } from '@/types';
 import { VALIDATION } from '../constants';
-
-type ValidationRule = {
-  name: {
-    isRequired: boolean;
-    maxLength: number;
-  };
-  authors: {
-    isRequired: boolean;
-  };
-  publishedDate: {
-    isRequired: boolean;
-    isFutureDate: (value: string) => boolean | '';
-  };
-  image: {
-    isRequired: boolean;
-  };
-  description: {
-    isRequired: boolean;
-    maxLength: number;
-  };
-};
-
-export type ValidationField = keyof ValidationRule;
 
 const rules: ValidationRule = {
   name: {
@@ -35,12 +13,11 @@ const rules: ValidationRule = {
     isRequired: true,
     isFutureDate: (value: string) => value && new Date(value) > new Date(),
   },
-  image: {
+  imageUrl: {
     isRequired: true,
   },
   description: {
     isRequired: true,
-    maxLength: 1000,
   },
 };
 
@@ -48,34 +25,35 @@ const rules: ValidationRule = {
 export const appendErrorMessage = <T extends HTMLElement>(inputElement: T, errorMessage: string) => {
   if (inputElement.parentElement === null) return;
 
-  const errorElement = inputElement.parentElement.lastElementChild;
-
-  if (errorElement !== null) errorElement.textContent = errorMessage;
+  let errorElement = inputElement.parentElement.querySelector('.error-message');
+  if (!errorElement) {
+    errorElement = document.createElement('div');
+    errorElement.className = 'error-message';
+    inputElement.parentElement.appendChild(errorElement);
+  }
+  errorElement.textContent = errorMessage;
 };
 
 // Remove error message
 export const removeErrorMessage = <T extends HTMLElement>(inputElement: T) => {
   if (inputElement.parentElement === null) return;
 
-  const errorElement = inputElement.parentElement.lastElementChild;
-
-  if (errorElement !== null) errorElement.textContent = '';
+  const errorElement = inputElement.parentElement.querySelector('.error-message');
+  if (errorElement) {
+    errorElement.textContent = '';
+  }
 };
 
-// Validate all fields off form
+// Validate all fields of form
 export const validateForm = (fieldName: ValidationField, value: string, validateFieldName: string) => {
   const fieldRules = rules[fieldName];
+
   let errorMessage = '';
 
   // Check required field
   if (fieldRules.isRequired && !value.trim()) {
     errorMessage = VALIDATION.MESSAGE.IS_REQUIRED(validateFieldName);
   } else {
-    // Check max-length
-    if ('maxLength' in fieldRules && value.trim().length > fieldRules.maxLength) {
-      errorMessage = VALIDATION.MESSAGE.MAX_LENGTH(validateFieldName, fieldRules.maxLength);
-    }
-
     // Check future date
     if ('isFutureDate' in fieldRules && fieldRules.isFutureDate(value)) {
       errorMessage = VALIDATION.MESSAGE.IS_FUTURE_DATE(validateFieldName);

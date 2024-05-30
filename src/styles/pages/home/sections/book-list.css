@@ -58,6 +58,7 @@
   gap: 8px;
 }
 
+<<<<<<< HEAD
 /* Skeleton loading */
 .book-item.loading {
   background-color: #f4f4f4;
@@ -137,6 +138,8 @@
   }
 }
 
+=======
+>>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
 @media (min-width: 768px) {
   .book-list {
     grid-template-columns: repeat(2, 1fr);
