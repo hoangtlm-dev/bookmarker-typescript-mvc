@@ -24,12 +24,13 @@ export type AutoFillFormOptionElements = {
   authorsInputElement: HTMLInputElement;
   publishedDateInputElement: HTMLInputElement;
   descriptionInputElement: HTMLInputElement;
+  validationInputElements: NodeListOf<HTMLInputElement>;
 };
 
 export type FileChangeOptionElements = {
   bookNamePreview: HTMLElement;
   bookImgPreview: HTMLImageElement;
-  hiddenFileInput: HTMLInputElement;
+  hiddenFileInputElement: HTMLInputElement;
   uploadBtn: HTMLButtonElement;
   positiveButton: HTMLButtonElement;
 };

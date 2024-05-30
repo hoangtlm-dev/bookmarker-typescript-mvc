@@ -15,6 +15,7 @@ import {
   SearchBookHandler,
   ShowFormHandlers,
   SortBookHandler,
+  ValidationField,
 } from '@/types';
 
 // Utils
@@ -37,6 +38,7 @@ import {
   showModal,
   showToast,
   updateDOMElement,
+  validateField,
 } from '@/utils';
 
 // Templates
@@ -160,8 +162,13 @@ export default class BookListView {
     optionElements: AutoFillFormOptionElements,
     recommendBooks: RecommendBook[],
   ) => {
-    const { nameInputElement, authorsInputElement, publishedDateInputElement, descriptionInputElement } =
-      optionElements;
+    const {
+      nameInputElement,
+      authorsInputElement,
+      publishedDateInputElement,
+      descriptionInputElement,
+      validationInputElements,
+    } = optionElements;
 
     //Prevent blur when clicking on item
     bookListElement.addEventListener('mousedown', (event) => {
@@ -181,6 +188,16 @@ export default class BookListView {
           publishedDateInputElement.value = selectedRecommendBook.publishedDate;
           descriptionInputElement.value = selectedRecommendBook.description;
         }
+
+        // Validate field when auto field
+        validationInputElements.forEach((input) => {
+          validateField(
+            input,
+            input.getAttribute('data-field-name') as ValidationField,
+            input.value,
+            input.getAttribute('data-field-validate') as string,
+          );
+        });
 
         this.hideRecommendationBooks(bookListElement);
       }
@@ -384,6 +401,7 @@ export default class BookListView {
               authorsInputElement,
               publishedDateInputElement,
               descriptionInputElement,
+              validationInputElements: inputElements,
             };
             this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks);
           } else {
