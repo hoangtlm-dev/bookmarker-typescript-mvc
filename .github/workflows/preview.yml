@@ -5,7 +5,10 @@ env:
   BASE_API_URL: ${{ secrets.BASE_API_URL }}
   IMG_UPLOAD_URL: ${{ secrets.IMG_UPLOAD_URL }}
   IMG_UPLOAD_KEY: ${{ secrets.IMG_UPLOAD_KEY }}
+<<<<<<< HEAD
+=======
   RECOMMEND_BOOK_API_URL: ${{ secrets.RECOMMEND_BOOK_API_URL }}
+>>>>>>> f0efbd7cbcbd2a4bedca3609f957e452adb937bf
 on:
   pull_request:
     branches:
