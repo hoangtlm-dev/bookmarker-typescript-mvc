@@ -6,7 +6,7 @@ export type AddBookHandler = (data: Omit<Book, 'id'>) => void;
 
 export type GetImageUrlHandler = (formData: FormData) => Promise<string>;
 
-export type GetBookHandler = (bookId: number) => Promise<Book | Error>;
+export type GetBookHandler = (bookId: number) => Promise<Book>;
 
 export type EditBookHandler = (bookId: number, data: Omit<Book, 'id'>) => void;
 
