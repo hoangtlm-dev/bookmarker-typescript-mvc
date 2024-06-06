@@ -204,17 +204,5 @@ export const handleFormSubmit = (
     saveHandler(submitData);
 
     hideModal(bookFormModal);
-
-    // const toastContainer = createElement('div', 'toast-container');
-    // showToast(
-    //   toastContainer,
-    //   toastTemplate(
-    //     TOAST.MESSAGE.SUCCESS,
-    //     mode === BOOK_FORM.MODE.EDIT_BOOK ? TOAST.DESCRIPTION.EDITED_BOOK : TOAST.DESCRIPTION.ADDED_BOOK,
-    //   ),
-    //   TOAST.DISPLAY_TIME,
-    // );
-
-    // updateDOMElement(mainContent, toastContainer);
   });
 };

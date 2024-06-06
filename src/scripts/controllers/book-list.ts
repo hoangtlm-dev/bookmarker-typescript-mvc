@@ -153,6 +153,8 @@ export default class BookListController {
     try {
       await this.bookModel.editBook(bookId, bookData);
       this.displayBookList();
+
+      this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.EDITED_BOOK);
     } catch (error) {
       if (error instanceof Error) {
         this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
