@@ -122,6 +122,8 @@ export default class BookDetailsView {
       if (btnEdit) {
         const selectedBook = await getBookHandler(parseInt(this.bookId));
 
+        if (selectedBook instanceof Error) return;
+
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
           saveHandler: async (data: Omit<Book, 'id'>) => {
