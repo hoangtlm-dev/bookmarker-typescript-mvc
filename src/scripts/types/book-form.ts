@@ -39,5 +39,4 @@ export type FormSubmitOptionElements = {
   inputElements: NodeListOf<HTMLInputElement>;
   bookFormModal: HTMLElement;
   positiveButton: HTMLButtonElement;
-  mainContent: HTMLElement;
 };

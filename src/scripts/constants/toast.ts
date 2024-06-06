@@ -1,7 +1,7 @@
 export const TOAST = {
   TYPE: {
     SUCCESS: 'success',
-    DANGER: 'danger',
+    FAIL: 'fail',
     WARNING: 'warning',
     INFO: 'info',
   },

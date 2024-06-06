@@ -1,5 +1,5 @@
 // Constants
-import { BOOK_FORM, TOAST } from '@/constants';
+import { BOOK_FORM } from '@/constants';
 
 //Types
 import {
@@ -13,7 +13,7 @@ import {
 } from '@/types';
 
 //Templates
-import { bookFormTemplate, modalContentTemplate, toastTemplate } from '@/templates';
+import { bookFormTemplate, modalContentTemplate } from '@/templates';
 
 // Utils
 import {
@@ -21,7 +21,6 @@ import {
   createElement,
   hideModal,
   showModal,
-  showToast,
   updateDOMElement,
   removeDOMElement,
   validateField,
@@ -152,7 +151,7 @@ export const handleFormSubmit = (
   formSubmitOptionElements: FormSubmitOptionElements,
   saveHandler: (input: Omit<Book, 'id'>) => void,
 ) => {
-  const { inputElements, bookFormModal, mainContent } = formSubmitOptionElements;
+  const { inputElements, bookFormModal } = formSubmitOptionElements;
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -205,17 +204,5 @@ export const handleFormSubmit = (
     saveHandler(submitData);
 
     hideModal(bookFormModal);
-
-    const toastContainer = createElement('div', 'toast-container');
-    showToast(
-      toastContainer,
-      toastTemplate(
-        TOAST.MESSAGE.SUCCESS,
-        mode === BOOK_FORM.MODE.EDIT_BOOK ? TOAST.DESCRIPTION.EDITED_BOOK : TOAST.DESCRIPTION.ADDED_BOOK,
-      ),
-      TOAST.DISPLAY_TIME,
-    );
-
-    updateDOMElement(mainContent, toastContainer);
   });
 };

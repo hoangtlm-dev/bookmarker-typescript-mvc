@@ -1,15 +1,15 @@
 import { TOAST } from '../constants';
+import { getElement } from './dom';
 
 export const hideToast = <T extends HTMLElement>(toastContainer: T) => {
   toastContainer.remove();
 };
 
 export const showToast = <T extends HTMLElement>(toastContainer: T, toastTemplate: string, displayTime: number) => {
-   
   toastContainer.innerHTML = toastTemplate;
 
   // Get the close button
-  const closeButton = toastContainer.querySelector(`#${TOAST.CLOSE_BUTTON_ID}`);
+  const closeButton = getElement(`#${TOAST.CLOSE_BUTTON_ID}`);
 
   // Hide the toast when clicking on close button
   if (closeButton) {

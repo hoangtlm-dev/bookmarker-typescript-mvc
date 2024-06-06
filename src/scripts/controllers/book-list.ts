@@ -1,5 +1,5 @@
 // Constants
-import { PAGINATION, SORT } from '@/constants';
+import { PAGINATION, SORT, TOAST } from '@/constants';
 
 //Types
 import { AddFormHandlers, Book, EditFormHandlers } from '@/types';
@@ -82,8 +82,17 @@ export default class BookListController {
   };
 
   handleAddBook = async (data: Omit<Book, 'id'>) => {
-    await this.bookModel.addBook(data);
-    await this.displayBookList();
+    try {
+      await this.bookModel.addBook(data);
+      await this.displayBookList();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
+      throw error;
+    }
   };
 
   handleGetRecommendBooks = async (query: string) => {
@@ -97,8 +106,16 @@ export default class BookListController {
   };
 
   handleGetBookById = async (bookId: number) => {
-    const response = await this.bookModel.getBookById(bookId);
-    return response;
+    try {
+      const response = await this.bookModel.getBookById(bookId);
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
+    }
   };
 
   handleSearchBook = (keyword: string) => {
@@ -133,25 +150,46 @@ export default class BookListController {
   };
 
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
-    await this.bookModel.editBook(bookId, bookData);
-    this.displayBookList();
+    try {
+      await this.bookModel.editBook(bookId, bookData);
+      this.displayBookList();
+
+      this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.EDITED_BOOK);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
+    }
   };
 
   handleDeleteBook = async (bookId: number) => {
-    await this.bookModel.deleteBook(bookId);
-    this.renderBooks = await this.bookModel.getBooks();
+    try {
+      await this.bookModel.deleteBook(bookId);
+      this.renderBooks = await this.bookModel.getBooks();
 
-    // Save the book list when sorting
-    if (this.sortStatus !== '') {
-      this.handleSortBookByTitle(this.sortStatus);
+      // Save the book list when sorting
+      if (this.sortStatus !== '') {
+        this.handleSortBookByTitle(this.sortStatus);
+      }
+
+      // Move back one page if the current page has no items
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      if (startIndex >= this.renderBooks.length && this.currentPage > 1) {
+        this.currentPage--;
+      }
+
+      //Show the toast message
+      this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.ADDED_BOOK);
+
+      this.updateBookList(this.renderBooks);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
     }
-
-    // Move back one page if the current page has no items
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    if (startIndex >= this.renderBooks.length && this.currentPage > 1) {
-      this.currentPage--;
-    }
-
-    this.updateBookList(this.renderBooks);
   };
 }

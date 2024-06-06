@@ -21,6 +21,7 @@ import {
 
 // Templates
 import {
+  defaultToastOptions,
   modalContentTemplate,
   toastTemplate,
   generateBookDetails,
@@ -30,7 +31,15 @@ import {
 } from '../templates';
 
 //Types
-import { Book, BookFormMode, DeleteBookHandler, EditFormHandlers, ShowFormHandlers } from '@/types';
+import {
+  Book,
+  BookFormMode,
+  DeleteBookHandler,
+  EditFormHandlers,
+  ShowFormHandlers,
+  ToastOptions,
+  ToastType,
+} from '@/types';
 
 export default class BookDetailsView {
   private mainContent: HTMLDivElement;
@@ -44,6 +53,19 @@ export default class BookDetailsView {
   bindRequestError = (message: string) => {
     removeChildNodes(this.mainContent);
     this.mainContent.innerHTML = generateRequestError(message);
+  };
+
+  bindToastMessage = (type: ToastType, message: string, description: string) => {
+    const toastContainer = createElement('div', 'toast-container');
+
+    const options: ToastOptions = {
+      ...defaultToastOptions,
+      type,
+    };
+
+    showToast(toastContainer, toastTemplate(message, description, options), TOAST.DISPLAY_TIME);
+
+    this.mainContent.appendChild(toastContainer);
   };
 
   displaySkeletonBookDetails() {
@@ -69,18 +91,24 @@ export default class BookDetailsView {
     const mainContent = this.mainContent;
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
-    const fileInput = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
-    const hiddenFileInput = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
+    const fileInputElement = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
+    const hiddenFileInputElement = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
     const bookNamePreview = getElement('.book-name-preview');
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
 
-    const fileChangeOptionElements = { bookNamePreview, bookImgPreview, hiddenFileInput, uploadBtn, positiveButton };
+    const fileChangeOptionElements = {
+      bookNamePreview,
+      bookImgPreview,
+      hiddenFileInputElement,
+      uploadBtn,
+      positiveButton,
+    };
     const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
 
-    handleFileInputChange(fileInput, fileChangeOptionElements, getImageUrlHandler);
+    handleFileInputChange(fileInputElement, fileChangeOptionElements, getImageUrlHandler);
     handleInputValidation(inputElements);
     handleNegativeButtonClick(negativeButton, bookFormModal);
     handleFormSubmit(form, mode, book, formSubmitOptionElements, saveHandler);
@@ -93,6 +121,8 @@ export default class BookDetailsView {
 
       if (btnEdit) {
         const selectedBook = await getBookHandler(parseInt(this.bookId));
+
+        if (selectedBook instanceof Error) return;
 
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,

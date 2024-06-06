@@ -15,6 +15,8 @@ import {
   SearchBookHandler,
   ShowFormHandlers,
   SortBookHandler,
+  ToastOptions,
+  ToastType,
   ValidationField,
 } from '@/types';
 
@@ -43,6 +45,7 @@ import {
 
 // Templates
 import {
+  defaultToastOptions,
   generateBookItem,
   generateConfirmDialog,
   generateListEmpty,
@@ -85,6 +88,19 @@ export default class BookListView {
   bindRequestError = (message: string) => {
     removeChildNodes(this.mainContent);
     this.mainContent.innerHTML = generateRequestError(message);
+  };
+
+  bindToastMessage = (type: ToastType, message: string, description: string) => {
+    const toastContainer = createElement('div', 'toast-container');
+
+    const options: ToastOptions = {
+      ...defaultToastOptions,
+      type,
+    };
+
+    showToast(toastContainer, toastTemplate(message, description, options), TOAST.DISPLAY_TIME);
+
+    this.mainContent.appendChild(toastContainer);
   };
 
   displaySkeletonBooks = (count: number) => {
@@ -313,6 +329,8 @@ export default class BookListView {
 
         const selectedBook = await getBookHandler(bookId);
 
+        if (!selectedBook) return;
+
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
           saveHandler: async (data: Omit<Book, 'id'>) => {
@@ -463,16 +481,6 @@ export default class BookListView {
           handler(bookId);
           // Remove the modal from the DOM
           this.mainContent.removeChild(confirmModal);
-
-          // Show the toast message
-          const toastContainer = createElement('div', 'toast-container');
-          showToast(
-            toastContainer,
-            toastTemplate(TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.DELETED_BOOK),
-            TOAST.DISPLAY_TIME,
-          );
-
-          this.mainContent.appendChild(toastContainer);
         });
 
         // Handling the 'Cancel' button click
