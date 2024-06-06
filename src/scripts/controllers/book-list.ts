@@ -91,6 +91,7 @@ export default class BookListController {
       } else {
         this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
       }
+      throw error;
     }
   };
 
@@ -105,8 +106,16 @@ export default class BookListController {
   };
 
   handleGetBookById = async (bookId: number) => {
-    const response = await this.bookModel.getBookById(bookId);
-    return response;
+    try {
+      const response = await this.bookModel.getBookById(bookId);
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
+    }
   };
 
   handleSearchBook = (keyword: string) => {

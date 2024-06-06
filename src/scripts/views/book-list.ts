@@ -329,6 +329,8 @@ export default class BookListView {
 
         const selectedBook = await getBookHandler(bookId);
 
+        if (!selectedBook) return;
+
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
           saveHandler: async (data: Omit<Book, 'id'>) => {
