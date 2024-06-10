@@ -91,7 +91,6 @@ export default class BookListController {
       } else {
         this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
       }
-      throw error;
     }
   };
 
