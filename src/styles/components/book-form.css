@@ -147,7 +147,7 @@
 
 .book-form .btn-save[disabled] {
   opacity: 0.6;
-  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .book-form .book-preview {

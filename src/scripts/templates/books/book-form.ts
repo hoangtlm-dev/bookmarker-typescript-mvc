@@ -23,7 +23,7 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
       <div class="form-content">
         <div class="input-group book-name">
           <label for="book-name" class="input-label text-sub-heading">Book name</label>
-          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="name" data-field-validate="Book's name" value="${name}"/>
+          <input type="text" class="input-box" name="book-name" placeholder="Book name" data-field-name="name" data-field-validate="Book's name" value="${name}" autocomplete="off"/>
           <p class="text-description text-error error-message"></p>
         </div>
         <div class="input-group book-author">

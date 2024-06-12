@@ -10,7 +10,7 @@ export type GetBookHandler = (bookId: number) => Promise<Book | undefined>;
 
 export type EditBookHandler = (bookId: number, data: Omit<Book, 'id'>) => void;
 
-export type GetRecommendBookHandler = (query: string) => Promise<RecommendBook[]>;
+export type GetRecommendBookHandler = (query: string) => Promise<RecommendBook[] | undefined>;
 
 export type SearchBookHandler = (keyword: string) => void;
 

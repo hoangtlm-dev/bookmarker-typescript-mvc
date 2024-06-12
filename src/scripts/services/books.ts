@@ -10,7 +10,10 @@ import { httpRequest } from '@/utils';
 // Api path
 const bookApiUrl = `${process.env.BASE_API_URL}/${API_PATH.BOOKS}`;
 const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${process.env.IMG_UPLOAD_KEY}`;
-const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL;
+const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL as string;
+
+// Api key
+const recommendBookAPIKey = process.env.RECOMMEND_BOOK_API_KEY as string;
 
 export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
@@ -23,9 +26,15 @@ export const getBooksServices = async (): Promise<Book[]> => {
 };
 
 export const getRecommendBookServices = async (query: string): Promise<RecommendBook[]> => {
-  const response = await httpRequest<null, RecommendBook[]>(
-    `${recommendBookAPIUrl}?search=${query}`,
-    HTTP_REQUEST.METHODS.GET,
+  const customHeaders = {
+    'API-key': recommendBookAPIKey,
+  };
+
+  const response = await httpRequest<{ query: string }, RecommendBook[]>(
+    recommendBookAPIUrl,
+    HTTP_REQUEST.METHODS.POST,
+    { query },
+    customHeaders,
   );
   return response;
 };
