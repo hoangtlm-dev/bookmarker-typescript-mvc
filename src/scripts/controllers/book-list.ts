@@ -95,8 +95,16 @@ export default class BookListController {
   };
 
   handleGetRecommendBooks = async (query: string) => {
-    const response = await this.bookModel.getRecommendBooks(query);
-    return response;
+    try {
+      const response = await this.bookModel.getRecommendBooks(query);
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+      }
+    }
   };
 
   handleGetImageUrl = async (fileUpload: FormData) => {
