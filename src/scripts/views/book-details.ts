@@ -115,23 +115,24 @@ export default class BookDetailsView {
   };
 
   bindEditBook = (editFormHandlers: EditFormHandlers) => {
-    const { getBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
+    const { getBookHandler, getRecommendBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
       const btnEdit = (event.target as HTMLElement).closest('.btn-edit');
 
       if (btnEdit) {
         const selectedBook = await getBookHandler(parseInt(this.bookId));
 
-        if (selectedBook instanceof Error) return;
+        if (selectedBook) {
+          const showFormHandlers: ShowFormHandlers = {
+            getImageUrlHandler,
+            getRecommendBookHandler,
+            saveHandler: async (data: Omit<Book, 'id'>) => {
+              editBookHandler(parseInt(this.bookId), data);
+            },
+          };
 
-        const showFormHandlers: ShowFormHandlers = {
-          getImageUrlHandler,
-          saveHandler: async (data: Omit<Book, 'id'>) => {
-            editBookHandler(parseInt(this.bookId), data);
-          },
-        };
-
-        this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
+          this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
+        }
       }
     });
   };

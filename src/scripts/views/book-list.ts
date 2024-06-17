@@ -308,7 +308,7 @@ export default class BookListView {
   };
 
   bindEditBook = (editFormHandlers: EditFormHandlers) => {
-    const { getBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
+    const { getBookHandler, getRecommendBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
       const target = event.target as HTMLElement;
 
@@ -333,6 +333,7 @@ export default class BookListView {
 
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
+          getRecommendBookHandler,
           saveHandler: async (data: Omit<Book, 'id'>) => {
             editBookHandler(bookId, data);
           },
@@ -399,16 +400,18 @@ export default class BookListView {
       });
     }
 
-    if (mode === BOOK_FORM.MODE.ADD_BOOK && getRecommendBookHandler) {
-      nameInputElement.addEventListener(
-        'input',
-        debounce(async (event: Event) => {
-          const target = event.target as HTMLInputElement;
-          const query = target.value.trim();
+    nameInputElement.addEventListener(
+      'input',
+      debounce(async (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        const query = target.value.trim();
 
-          if (query) {
-            const recommendBooks = await getRecommendBookHandler(query);
+        if (query) {
+          const recommendBooks = await getRecommendBookHandler(query);
+
+          if (recommendBooks) {
             this.displayRecommendationBooks(booksRecommendation, recommendBooks);
+
             if (!booksRecommendation.parentElement) {
               updateDOMElement(nameInputGroup, booksRecommendation);
             }
@@ -422,14 +425,14 @@ export default class BookListView {
               validationInputElements: inputElements,
             };
             this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks);
-          } else {
-            if (booksRecommendation.parentElement) {
-              this.hideRecommendationBooks(booksRecommendation);
-            }
           }
-        }, DEBOUNCE.DELAY_TIME),
-      );
-    }
+        } else {
+          if (booksRecommendation.parentElement) {
+            this.hideRecommendationBooks(booksRecommendation);
+          }
+        }
+      }, DEBOUNCE.DELAY_TIME),
+    );
 
     const fileChangeOptionElements = {
       bookNamePreview,
