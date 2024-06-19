@@ -3,11 +3,10 @@ export type Book = {
   name: string;
   description: string;
   authors: string[];
-  imageUrl: string;
+  image: string;
   publishedDate: string;
   createdAt: string;
   updatedAt: string;
-  deletedAt?: string;
 };
 
 export type RecommendBook = {
@@ -26,6 +25,6 @@ export type CompareBook = {
   name: string;
   authors: string;
   publishedDate: string;
-  imageUrl: string;
+  image: string;
   description: string;
 };

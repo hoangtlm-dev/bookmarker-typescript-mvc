@@ -17,7 +17,7 @@ export type BookOptions = {
 
 export type BookFormMode = (typeof BOOK_FORM.MODE)[keyof typeof BOOK_FORM.MODE];
 
-export type BookFormData = Omit<Book, 'id' | 'updatedAt' | 'deletedAt'>;
+export type BookFormData = Omit<Book, 'id' | 'updatedAt'>;
 
 export type AutoFillFormOptionElements = {
   nameInputElement: HTMLInputElement;

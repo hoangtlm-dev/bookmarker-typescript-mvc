@@ -10,7 +10,7 @@ interface Icons {
 }
 
 export const generateBookItem = (book: Book, icons: Icons) => {
-  const { id, name, description, imageUrl, updatedAt } = book;
+  const { id, name, description, image, updatedAt } = book;
 
   const { viewDetailsIcon, deleteIcon } = icons;
 
@@ -32,7 +32,7 @@ export const generateBookItem = (book: Book, icons: Icons) => {
     <div class="book-published-info">
       <span class="text-description book-published-time">${getHours(updatedAt)}</span>
       <figure class="book-published-image-frame">
-        <img loading="lazy" src=${imageUrl} alt="${name}" class="book-published-image" />
+        <img loading="lazy" src=${image} alt="${name}" class="book-published-image" />
       </figure>
     </div>
   `;

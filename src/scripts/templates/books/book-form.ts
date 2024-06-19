@@ -4,7 +4,7 @@ import { BookOptions } from '@/types/book-form';
 import uploadIcon from '../../../assets/icons/upload.svg';
 
 export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
-  const { name, description, authors, imageUrl, publishedDate } = book;
+  const { name, description, authors, image, publishedDate } = book;
 
   const {
     formTitle = BOOK_FORM.FORM_TITLE.CREATE_BOOK,
@@ -43,10 +43,10 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
             <span class="upload-text text-sub-heading text-light">Upload</span>
           </button>
           <input id=${fileInputId} accept="image/*" type="file"/>
-          <input type="hidden" class="input-box" name="book-image" data-field-name="imageUrl" data-field-validate="Book's image" value="${imageUrl}"/>
+          <input type="hidden" class="input-box" name="book-image" data-field-name="imageUrl" data-field-validate="Book's image" value="${image}"/>
           <div class="book-preview">
             <span class="text-description book-name-preview"></span>
-            <img class="book-img-preview" src="${imageUrl}" alt="${name}"/>
+            <img class="book-img-preview" src="${image}" alt="${name}"/>
           </div>
           <p class="text-description text-error error-message"></p>
         </div>
