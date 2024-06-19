@@ -20,8 +20,11 @@ export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> 
   return response;
 };
 
-export const getBooksServices = async (): Promise<Book[]> => {
-  const response = await httpRequest<null, Book[]>(bookApiUrl, HTTP_REQUEST.METHODS.GET);
+export const getBooksServices = async (params?: string): Promise<Book[]> => {
+  const response = await httpRequest<null, Book[]>(
+    params ? `${bookApiUrl}/${params}` : bookApiUrl,
+    HTTP_REQUEST.METHODS.GET,
+  );
   return response;
 };
 
