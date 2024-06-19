@@ -168,7 +168,7 @@ export const handleFormSubmit = (
 
     const publishedDate = formData.get('book-published-date') as string;
     const description = formData.get('book-description') as string;
-    const imageUrl = formData.get('book-image') as string;
+    const image = formData.get('book-image') as string;
     const currentTime = new Date().getTime().toString();
 
     const submitData: Omit<Book, 'id'> = {
@@ -176,10 +176,9 @@ export const handleFormSubmit = (
       authors: authorList,
       publishedDate,
       description,
-      imageUrl,
+      image,
       createdAt: mode === BOOK_FORM.MODE.EDIT_BOOK ? originalData.createdAt : currentTime,
       updatedAt: currentTime,
-      deletedAt: undefined,
     };
 
     let isFormValid = true;
@@ -187,7 +186,7 @@ export const handleFormSubmit = (
     inputElements.forEach((input) => {
       let validateValue = '';
       if (input.type === 'file') {
-        validateValue = imageUrl;
+        validateValue = image;
       } else {
         validateValue = input.value;
       }

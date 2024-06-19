@@ -5,9 +5,8 @@ export const MOCK_BOOK: Book = {
   authors: [],
   name: '',
   description: '',
-  imageUrl: '',
+  image: '',
   createdAt: '',
   updatedAt: '',
-  deletedAt: '',
   publishedDate: '',
 };

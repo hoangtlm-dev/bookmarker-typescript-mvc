@@ -373,7 +373,7 @@ export default class BookListView {
       name: book.name,
       authors: book.authors.join(','),
       publishedDate: book.publishedDate,
-      imageUrl: book.imageUrl,
+      image: book.image,
       description: book.description,
     };
 
