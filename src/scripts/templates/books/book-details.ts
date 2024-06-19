@@ -6,12 +6,12 @@ import { timeFormat } from '../../utils/time';
 import { Book } from '@/types';
 
 export const generateBookDetails = (book: Book) => {
-  const { name, description, authors, imageUrl, createdAt, updatedAt } = book;
+  const { name, description, authors, image, createdAt, updatedAt } = book;
 
   return `
     <div class="book-details-image-action">
       <figure class="book-details-image-frame">
-        <img loading="lazy" src=${imageUrl} alt=${name} class="book-details-image"/>
+        <img loading="lazy" src=${image} alt=${name} class="book-details-image"/>
       </figure>
       <div class="book-details-action">
         <button class="btn btn-square btn-secondary btn-back">

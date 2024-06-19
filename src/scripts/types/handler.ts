@@ -27,11 +27,12 @@ export type AddFormHandlers = {
 export type EditFormHandlers = {
   getBookHandler: GetBookHandler;
   getImageUrlHandler: GetImageUrlHandler;
+  getRecommendBookHandler: GetRecommendBookHandler;
   editBookHandler: EditBookHandler;
 };
 
 export type ShowFormHandlers = {
   getImageUrlHandler: GetImageUrlHandler;
-  getRecommendBookHandler?: GetRecommendBookHandler;
+  getRecommendBookHandler: GetRecommendBookHandler;
   saveHandler: (input: Omit<Book, 'id'>) => void;
 };

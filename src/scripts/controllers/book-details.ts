@@ -15,6 +15,7 @@ export default class BookDetailsController {
 
     this.editFormHandlers = {
       getBookHandler: this.handleGetBookById,
+      getRecommendBookHandler: this.handleGetRecommendBooks,
       getImageUrlHandler: this.handleGetImageUrl,
       editBookHandler: this.handleEditBook,
     };
@@ -38,6 +39,19 @@ export default class BookDetailsController {
         this.bookDetailsView.bindRequestError(error.message);
       } else {
         this.bookDetailsView.bindRequestError(error as string);
+      }
+    }
+  };
+
+  handleGetRecommendBooks = async (query: string) => {
+    try {
+      const response = await this.bookModel.getRecommendBooks(query);
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
       }
     }
   };
