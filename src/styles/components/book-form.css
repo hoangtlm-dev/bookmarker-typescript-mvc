@@ -88,6 +88,10 @@
   position: relative;
 }
 
+.book-form .input-group.book-image #file-input[disabled] {
+  cursor: not-allowed;
+}
+
 .book-form .book-img-preview {
   width: 95px;
   height: 116px;
@@ -111,8 +115,8 @@
   font-size: var(--sm-fs);
 }
 
-.book-form .btn-upload:hover {
-  opacity: 0.8;
+.book-form .book-image:hover .btn-upload {
+  opacity: 0.6;
 }
 
 .book-form .book-image input[type='file'] {
@@ -158,6 +162,7 @@
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
 }
 
 .book-form .error-message {

@@ -408,7 +408,7 @@ export default class BookListView {
 
           if (query) {
             const recommendBooks = await getRecommendBookHandler(query);
-            this.displayRecommendationBooks(booksRecommendation, recommendBooks);
+            this.displayRecommendationBooks(booksRecommendation, recommendBooks as RecommendBook[]);
             if (!booksRecommendation.parentElement) {
               updateDOMElement(nameInputGroup, booksRecommendation);
             }
@@ -421,7 +421,7 @@ export default class BookListView {
               descriptionInputElement,
               validationInputElements: inputElements,
             };
-            this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks);
+            this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks as RecommendBook[]);
           } else {
             if (booksRecommendation.parentElement) {
               this.hideRecommendationBooks(booksRecommendation);
@@ -432,9 +432,10 @@ export default class BookListView {
     }
 
     const fileChangeOptionElements = {
+      fileInputElement,
+      hiddenFileInputElement,
       bookNamePreview,
       bookImgPreview,
-      hiddenFileInputElement,
       uploadBtn,
       positiveButton,
     };

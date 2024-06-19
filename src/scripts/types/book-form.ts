@@ -28,9 +28,10 @@ export type AutoFillFormOptionElements = {
 };
 
 export type FileChangeOptionElements = {
+  fileInputElement: HTMLInputElement;
+  hiddenFileInputElement: HTMLInputElement;
   bookNamePreview: HTMLElement;
   bookImgPreview: HTMLImageElement;
-  hiddenFileInputElement: HTMLInputElement;
   uploadBtn: HTMLButtonElement;
   positiveButton: HTMLButtonElement;
 };

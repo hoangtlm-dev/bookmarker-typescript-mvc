@@ -59,9 +59,10 @@ export const getCurrentFormData = (
 };
 
 export const clearFileInputData = (fileChangeOptionElements: FileChangeOptionElements) => {
-  const { bookNamePreview, bookImgPreview, hiddenFileInputElement, positiveButton, uploadBtn } =
+  const { fileInputElement, hiddenFileInputElement, bookNamePreview, bookImgPreview, positiveButton, uploadBtn } =
     fileChangeOptionElements;
 
+  fileInputElement.disabled = true;
   hiddenFileInputElement.value = '';
   bookNamePreview.innerHTML = '';
   bookImgPreview.src = '';
@@ -76,8 +77,10 @@ export const updateFileInputData = (
   imageUrl: string,
   fileChangeOptionElements: FileChangeOptionElements,
 ) => {
-  const { bookNamePreview, bookImgPreview, hiddenFileInputElement, positiveButton } = fileChangeOptionElements;
+  const { fileInputElement, bookNamePreview, bookImgPreview, hiddenFileInputElement, positiveButton } =
+    fileChangeOptionElements;
 
+  fileInputElement.disabled = false;
   bookNamePreview.innerHTML = `Selected: ${file.name}`;
   bookImgPreview.src = URL.createObjectURL(file);
   bookImgPreview.style.width = '96px';
@@ -110,12 +113,12 @@ export const handleFileInputChange = (
     formData.append('image', file);
 
     clearFileInputData(fileChangeOptionElements);
-    updateDOMElement(fileInput.parentElement as HTMLElement, spinner);
+    updateDOMElement(fileChangeOptionElements.bookNamePreview, spinner);
 
     const imageUrl = await getImageUrlHandler(formData);
 
     updateFileInputData(file, imageUrl, fileChangeOptionElements);
-    removeDOMElement(fileInput.parentElement as HTMLElement, spinner);
+    removeDOMElement(fileChangeOptionElements.bookNamePreview, spinner);
   });
 };
 
