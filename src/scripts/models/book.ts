@@ -18,8 +18,8 @@ export default class BookModel {
     return response;
   };
 
-  getBooks = async () => {
-    const response = await getBooksServices();
+  getBooks = async (params?: string) => {
+    const response = await getBooksServices(params);
     return response;
   };
 

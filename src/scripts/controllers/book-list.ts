@@ -52,15 +52,18 @@ export default class BookListController {
     this.bookListView.bindDeleteBook(this.handleDeleteBook);
   };
 
-  displayBookList = async () => {
+  displayBookList = async (page: number = 1, itemsPerPage: number = PAGINATION.ITEMS_PER_PAGE) => {
     try {
       this.bookListView.displaySkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
 
-      const response = await this.bookModel.getBooks();
-      const latestBooks = sortArray(response, SORT.KEY.CREATED_AT, SORT.STATUS.DESCENDING);
-      this.renderBooks = [...latestBooks];
+      // Get book in a pages
+      const params = `?_page=${page}&_limit=${itemsPerPage}`;
+      const response = await this.bookModel.getBooks(params);
+      const books = response.data;
+      const totalBooks = response.totalPage;
+      const newestBooks = sortArray(books, SORT.KEY.CREATED_AT, SORT.STATUS.DESCENDING);
 
-      this.updateBookList(this.renderBooks);
+      this.bookListView.displayBooks(newestBooks, totalBooks, page);
     } catch (error) {
       if (error instanceof Error) {
         this.bookListView.bindRequestError(error.message);
@@ -71,15 +74,15 @@ export default class BookListController {
   };
 
   updateBookList = (bookList: Book[]) => {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    const booksRender = bookList.slice(startIndex, endIndex);
-    this.bookListView.displayBooks(bookList, booksRender, this.currentPage);
+    // const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    // const endIndex = startIndex + this.itemsPerPage;
+    // const booksRender = bookList.slice(startIndex, endIndex);
+    this.bookListView.displayBooks(bookList, bookList.length, this.currentPage);
   };
 
   handlePageChange = (pageNumber: number) => {
     this.currentPage = pageNumber;
-    this.updateBookList(this.renderBooks);
+    this.displayBookList(this.currentPage, this.itemsPerPage);
   };
 
   handleAddBook = async (data: Omit<Book, 'id'>) => {
@@ -175,23 +178,7 @@ export default class BookListController {
   handleDeleteBook = async (bookId: number) => {
     try {
       await this.bookModel.deleteBook(bookId);
-      this.renderBooks = await this.bookModel.getBooks();
-
-      // Save the book list when sorting
-      if (this.sortStatus !== '') {
-        this.handleSortBookByTitle(this.sortStatus);
-      }
-
-      // Move back one page if the current page has no items
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      if (startIndex >= this.renderBooks.length && this.currentPage > 1) {
-        this.currentPage--;
-      }
-
-      //Show the toast message
-      this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.ADDED_BOOK);
-
-      this.updateBookList(this.renderBooks);
+      await this.displayBookList();
     } catch (error) {
       if (error instanceof Error) {
         this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);

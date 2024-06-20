@@ -1,7 +1,7 @@
 // Constants
 import { HTTP_REQUEST } from '@/constants';
 
-//Types
+// Types
 import { RequestOptions } from '@/types';
 
 export const httpRequest = async <T, U>(
@@ -9,7 +9,7 @@ export const httpRequest = async <T, U>(
   method: string,
   data?: T,
   customHeaders?: Record<string, string>,
-): Promise<U> => {
+): Promise<U | { data: U; totalPage: number }> => {
   const headers = customHeaders ? { ...customHeaders } : {};
 
   const options: RequestOptions = {
@@ -31,7 +31,17 @@ export const httpRequest = async <T, U>(
 
   if (response.ok) {
     const responseData = await response.json();
-    return responseData as U;
+
+    if (method === HTTP_REQUEST.METHODS.GET && Array.isArray(responseData)) {
+      const totalPage = parseInt(response.headers.get('X-Total-Count') as string, 10);
+
+      return {
+        data: responseData as U,
+        totalPage,
+      };
+    } else {
+      return responseData as U;
+    }
   } else {
     const errorMessage = HTTP_REQUEST.ERROR_MESSAGES[response.status] || 'An unexpected error occurred';
     throw new Error(errorMessage);

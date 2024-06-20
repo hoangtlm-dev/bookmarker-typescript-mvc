@@ -17,15 +17,15 @@ const recommendBookAPIKey = process.env.RECOMMEND_BOOK_API_KEY as string;
 
 export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
-  return response;
+  return response as Book;
 };
 
-export const getBooksServices = async (params?: string): Promise<Book[]> => {
+export const getBooksServices = async (params?: string): Promise<{ data: Book[]; totalPage: number }> => {
   const response = await httpRequest<null, Book[]>(
     params ? `${bookApiUrl}/${params}` : bookApiUrl,
     HTTP_REQUEST.METHODS.GET,
   );
-  return response;
+  return response as { data: Book[]; totalPage: number };
 };
 
 export const getRecommendBookServices = async (query: string): Promise<RecommendBook[]> => {
@@ -39,12 +39,12 @@ export const getRecommendBookServices = async (query: string): Promise<Recommend
     { query },
     customHeaders,
   );
-  return response;
+  return response as RecommendBook[];
 };
 
 export const getBookByIdService = async (bookId: number): Promise<Book> => {
   const response = await httpRequest<null, Book>(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.GET);
-  return response;
+  return response as Book;
 };
 
 export const editBookService = async (bookId: number, bookData: Omit<Book, 'id'>): Promise<Book> => {
@@ -53,7 +53,7 @@ export const editBookService = async (bookId: number, bookData: Omit<Book, 'id'>
     HTTP_REQUEST.METHODS.PUT,
     bookData,
   );
-  return response;
+  return response as Book;
 };
 
 export const deleteBookService = async (bookId: number): Promise<void> => {
@@ -61,6 +61,10 @@ export const deleteBookService = async (bookId: number): Promise<void> => {
 };
 
 export const getImageUrlServices = async (formData: FormData) => {
-  const response = await httpRequest<FormData, ImgBBApiResponse>(uploadImageUrl, HTTP_REQUEST.METHODS.POST, formData);
+  const response = (await httpRequest<FormData, ImgBBApiResponse>(
+    uploadImageUrl,
+    HTTP_REQUEST.METHODS.POST,
+    formData,
+  )) as ImgBBApiResponse;
   return response.data.url;
 };

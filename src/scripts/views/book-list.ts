@@ -111,7 +111,7 @@ export default class BookListView {
     });
   };
 
-  displayBooks = (bookList: Book[], booksShow: Book[], currentPage: number) => {
+  displayBooks = (books: Book[], totalBooks: number, currentPage: number): void => {
     while (this.bookList.firstChild) {
       this.bookList.removeChild(this.bookList.firstChild);
     }
@@ -122,13 +122,13 @@ export default class BookListView {
     // Remove existing Empty list
     removeDOMElementBySelector(this.bookListWrapper, '.list-empty');
 
-    if (booksShow.length === 0) {
+    if (books.length === 0) {
       const bookListEmpty = createElement('div', 'list-empty');
       bookListEmpty.innerHTML = generateListEmpty();
       this.bookListWrapper.appendChild(bookListEmpty);
       removeDOMElement(this.bookListWrapper, this.bookList);
     } else {
-      booksShow.forEach((book) => {
+      books.forEach((book) => {
         const bookItem = createElement('li', 'book-item');
         const icons = { viewDetailsIcon, deleteIcon };
         bookItem.innerHTML = generateBookItem(book, icons);
@@ -138,10 +138,10 @@ export default class BookListView {
       });
 
       // Display Pagination
-      if (bookList.length > PAGINATION.ITEMS_PER_PAGE) {
+      if (totalBooks > PAGINATION.ITEMS_PER_PAGE) {
         const paginationContainer = createElement('div', 'pagination');
         const paginationElement = generatePagination(
-          bookList.length,
+          totalBooks,
           PAGINATION.ITEMS_PER_PAGE,
           () => {
             removeDOMElement(this.bookListWrapper, paginationContainer);
@@ -232,6 +232,11 @@ export default class BookListView {
     this.mainContent.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       if (target.classList.contains('btn-pagination')) {
+        // Remove current list
+        while (this.bookList.firstChild) {
+          this.bookList.removeChild(this.bookList.firstChild);
+        }
+
         const pageNumber = parseInt(target.dataset.page!, 10);
         if (pageNumber) {
           handler(pageNumber);
