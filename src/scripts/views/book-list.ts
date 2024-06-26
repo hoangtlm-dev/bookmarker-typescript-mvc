@@ -10,6 +10,7 @@ import {
   CompareBook,
   DeleteBookHandler,
   EditFormHandlers,
+  NavigateBookDetailsHandlers,
   PageChangeHandler,
   RecommendBook,
   SearchBookHandler,
@@ -307,6 +308,20 @@ export default class BookListView {
     });
   };
 
+  bindNavigationBookDetails = (handler: NavigateBookDetailsHandlers): void => {
+    this.mainContent.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const btnViewDetails = target.closest('.btn-view-details');
+      const bookItem = target.closest('.book-item')!;
+      const bookIdString = bookItem.getAttribute('data-book-id')!;
+      const bookId = parseInt(bookIdString);
+
+      if (btnViewDetails) {
+        handler(bookId);
+      }
+    });
+  };
+
   bindEditBook = (editFormHandlers: EditFormHandlers) => {
     const { getBookHandler, getRecommendBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
@@ -315,8 +330,9 @@ export default class BookListView {
       const bookItem = target.closest('.book-item');
 
       const btnDelete = target.closest('.btn-delete');
+      const btnViewDetails = target.closest('.btn-view-details');
 
-      if (btnDelete) {
+      if (btnDelete || btnViewDetails) {
         return;
       }
 

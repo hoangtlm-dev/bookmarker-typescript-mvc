@@ -50,6 +50,7 @@ export default class BookListController {
     this.bookListView.bindSearchInputChange(this.handleSearchBook);
     this.bookListView.bindSortBook(this.handleSortBookByTitle);
     this.bookListView.bindDeleteBook(this.handleDeleteBook);
+    this.bookListView.bindNavigationBookDetails(this.handleNavigateBookDetails);
   };
 
   displayBookList = async () => {
@@ -68,6 +69,10 @@ export default class BookListController {
         this.bookListView.bindRequestError(error as string);
       }
     }
+  };
+
+  handleNavigateBookDetails = (bookId: number) => {
+    window.location.href = `/book-details?id=${bookId}`;
   };
 
   updateBookList = (bookList: Book[]) => {
