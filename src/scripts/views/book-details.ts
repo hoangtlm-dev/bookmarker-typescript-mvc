@@ -45,6 +45,7 @@ import {
   ShowFormHandlers,
   ToastOptions,
   ToastType,
+  ToggleTextHandler,
   ValidationField,
 } from '@/types';
 
@@ -281,6 +282,18 @@ export default class BookDetailsView {
         };
 
         this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
+      }
+    });
+  };
+
+  bindToggleText = (handler: ToggleTextHandler) => {
+    this.mainContent.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const btnShowDescription = target.closest('.btn-show-description') as HTMLButtonElement;
+      const textDescriptionElement = getElement('.book-details-description');
+
+      if (btnShowDescription) {
+        handler(parseInt(this.bookId), textDescriptionElement, btnShowDescription);
       }
     });
   };

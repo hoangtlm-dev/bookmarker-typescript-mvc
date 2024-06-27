@@ -20,6 +20,12 @@ export type SortBookHandler = (sortStatus: string) => void;
 
 export type DeleteBookHandler = (bookId: number) => void;
 
+export type ToggleTextHandler = (
+  bookId: number,
+  textDescriptionElement: HTMLElement,
+  btnShowDescriptionElement: HTMLButtonElement,
+) => void;
+
 export type AddFormHandlers = {
   getImageUrlHandler: GetImageUrlHandler;
   getRecommendBookHandler: GetRecommendBookHandler;
