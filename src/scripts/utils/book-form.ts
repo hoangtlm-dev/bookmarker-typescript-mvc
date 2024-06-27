@@ -1,14 +1,17 @@
 // Constants
-import { BOOK_FORM } from '@/constants';
+import { BOOK_FORM, DEBOUNCE } from '@/constants';
 
 //Types
 import {
+  AutoFillFormOptionElements,
   Book,
   BookFormData,
   BookFormMode,
+  CompareBook,
   FileChangeOptionElements,
   FormSubmitOptionElements,
   GetImageUrlHandler,
+  RecommendBook,
   ValidationField,
 } from '@/types';
 
@@ -25,6 +28,7 @@ import {
   removeDOMElement,
   validateField,
   validateForm,
+  debounce,
 } from '@/utils';
 
 export const createBookFormTitle = (book: Book, mode: BookFormMode) => {
@@ -144,6 +148,86 @@ export const isDataEqual = <T>(obj1: T, obj2: T, attributes: (keyof T)[]) => {
       return JSON.stringify(value1) === JSON.stringify(value2);
     }
     return value1 === value2;
+  });
+};
+
+export const autoFillRecommendBook = (
+  bookListElement: HTMLUListElement,
+  formDataElements: AutoFillFormOptionElements,
+  recommendBooks: RecommendBook[],
+) => {
+  const {
+    nameInputElement,
+    authorsInputElement,
+    publishedDateInputElement,
+    descriptionInputElement,
+    validationInputElements,
+  } = formDataElements;
+
+  //Prevent blur when clicking on item
+  bookListElement.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+  });
+
+  bookListElement.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+
+    if (target.classList.contains('book-recommendation-item')) {
+      const selectedRecommendBook = recommendBooks.find((book) => book.title === target.textContent);
+
+      if (selectedRecommendBook) {
+        // Update form value
+        nameInputElement.value = selectedRecommendBook.title;
+        authorsInputElement.value = selectedRecommendBook.authors.toString();
+        publishedDateInputElement.value = selectedRecommendBook.publishedDate;
+        descriptionInputElement.value = selectedRecommendBook.description;
+      }
+
+      // Validate field when auto field
+      validationInputElements.forEach((input) => {
+        validateField(
+          input,
+          input.getAttribute('data-field-name') as ValidationField,
+          input.value,
+          input.getAttribute('data-field-validate') as string,
+        );
+      });
+
+      hideRecommendationBooks(bookListElement);
+    }
+  });
+
+  nameInputElement.addEventListener('blur', () => {
+    hideRecommendationBooks(bookListElement);
+  });
+};
+
+export const hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
+  bookListWrapper.remove();
+};
+
+export const handleDisablePositiveButton = (
+  inputElements: NodeListOf<HTMLInputElement>,
+  positiveButton: HTMLButtonElement,
+  originalData: CompareBook,
+) => {
+  positiveButton.disabled = true;
+
+  const currentData = getCurrentFormData(inputElements);
+  const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
+
+  const debouncedCompare = debounce(() => {
+    if (!isSameData) {
+      positiveButton.disabled = false;
+    } else {
+      positiveButton.disabled = true;
+    }
+  }, DEBOUNCE.DELAY_TIME);
+
+  inputElements.forEach((input) => {
+    input.addEventListener('input', () => {
+      debouncedCompare();
+    });
   });
 };
 

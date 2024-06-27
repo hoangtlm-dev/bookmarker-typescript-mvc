@@ -4,7 +4,6 @@ import { DEBOUNCE, PAGINATION, SORT, TOAST } from '@/constants';
 // Types
 import {
   AddFormHandlers,
-  AutoFillFormOptionElements,
   Book,
   BookFormMode,
   CompareBook,
@@ -18,30 +17,30 @@ import {
   SortBookHandler,
   ToastOptions,
   ToastType,
-  ValidationField,
 } from '@/types';
 
 // Utils
 import {
+  autoFillRecommendBook,
   createBookFormModal,
   createBookFormTitle,
   createElement,
   debounce,
-  getCurrentFormData,
   getElement,
   getElements,
+  handleDisablePositiveButton,
   handleFileInputChange,
   handleFormSubmit,
   handleInputValidation,
   handleNegativeButtonClick,
   hideModal,
+  hideRecommendationBooks,
   removeChildNodes,
   removeDOMElement,
   removeDOMElementBySelector,
   showModal,
   showToast,
   updateDOMElement,
-  validateField,
 } from '@/utils';
 
 // Templates
@@ -172,61 +171,6 @@ export default class BookListView {
         }
       });
     }
-  };
-
-  autoFillRecommendBook = (
-    bookListElement: HTMLUListElement,
-    optionElements: AutoFillFormOptionElements,
-    recommendBooks: RecommendBook[],
-  ) => {
-    const {
-      nameInputElement,
-      authorsInputElement,
-      publishedDateInputElement,
-      descriptionInputElement,
-      validationInputElements,
-    } = optionElements;
-
-    //Prevent blur when clicking on item
-    bookListElement.addEventListener('mousedown', (event) => {
-      event.preventDefault();
-    });
-
-    bookListElement.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-
-      if (target.classList.contains('book-recommendation-item')) {
-        const selectedRecommendBook = recommendBooks.find((book) => book.title === target.textContent);
-
-        if (selectedRecommendBook) {
-          // Update form value
-          nameInputElement.value = selectedRecommendBook.title;
-          authorsInputElement.value = selectedRecommendBook.authors.toString();
-          publishedDateInputElement.value = selectedRecommendBook.publishedDate;
-          descriptionInputElement.value = selectedRecommendBook.description;
-        }
-
-        // Validate field when auto field
-        validationInputElements.forEach((input) => {
-          validateField(
-            input,
-            input.getAttribute('data-field-name') as ValidationField,
-            input.value,
-            input.getAttribute('data-field-validate') as string,
-          );
-        });
-
-        this.hideRecommendationBooks(bookListElement);
-      }
-    });
-
-    nameInputElement.addEventListener('blur', () => {
-      this.hideRecommendationBooks(bookListElement);
-    });
-  };
-
-  hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
-    bookListWrapper.remove();
   };
 
   bindPageChange = (handler: PageChangeHandler) => {
@@ -363,6 +307,7 @@ export default class BookListView {
   showBookForm = (book: Book, mode: BookFormMode, showFormHandlers: ShowFormHandlers) => {
     const { getImageUrlHandler, getRecommendBookHandler, saveHandler } = showFormHandlers;
 
+    // Create book form title and append into DOM
     const formTitle = createBookFormTitle(book, mode);
     const bookFormModal = createBookFormModal(book, formTitle);
     updateDOMElement(this.mainContent, bookFormModal);
@@ -393,26 +338,9 @@ export default class BookListView {
       description: book.description,
     };
 
-    // Disable Save button when the data is not changed
+    // Disable Save button when the data is not changed in edit mode
     if (mode === BOOK_FORM.MODE.EDIT_BOOK) {
-      positiveButton.disabled = true;
-
-      const currentData = getCurrentFormData(inputElements);
-      const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
-
-      const debouncedCompare = debounce(() => {
-        if (!isSameData) {
-          positiveButton.disabled = false;
-        } else {
-          positiveButton.disabled = true;
-        }
-      }, DEBOUNCE.DELAY_TIME);
-
-      inputElements.forEach((input) => {
-        input.addEventListener('input', () => {
-          debouncedCompare();
-        });
-      });
+      handleDisablePositiveButton(inputElements, positiveButton, originalData);
     }
 
     nameInputElement.addEventListener(
@@ -425,12 +353,13 @@ export default class BookListView {
         if (query) {
           const recommendBooks = await getRecommendBookHandler(query);
           this.displayRecommendationBooks(booksRecommendation, recommendBooks as RecommendBook[]);
+
           if (!booksRecommendation.parentElement) {
             updateDOMElement(nameInputGroup, booksRecommendation);
           }
 
           //autofill recommended book
-          const optionElements = {
+          const formDataElements = {
             nameInputElement,
             authorsInputElement,
             publishedDateInputElement,
@@ -438,10 +367,10 @@ export default class BookListView {
             validationInputElements: inputElements,
           };
 
-          this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks as RecommendBook[]);
+          autoFillRecommendBook(booksRecommendation, formDataElements, recommendBooks as RecommendBook[]);
         } else {
           if (booksRecommendation.parentElement) {
-            this.hideRecommendationBooks(booksRecommendation);
+            hideRecommendationBooks(booksRecommendation);
           }
         }
       }, DEBOUNCE.DELAY_TIME),
