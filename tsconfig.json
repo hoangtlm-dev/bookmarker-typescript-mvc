@@ -15,5 +15,5 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
-  "files": ["globals.d.ts"]
+  "files": ["globals.d.ts", "environment.d.ts"]
 }
