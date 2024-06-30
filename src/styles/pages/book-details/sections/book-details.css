@@ -61,6 +61,11 @@
   background-color: transparent;
   color: var(--primary-color);
   font-size: var(--md-fs);
+  cursor: pointer;
+}
+
+.book-details .btn-show-description:hover {
+  opacity: 0.6;
 }
 
 .book-details .book-details-info-list {

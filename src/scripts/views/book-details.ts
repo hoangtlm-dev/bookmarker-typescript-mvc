@@ -1,5 +1,5 @@
 // Constants
-import { BOOK_FORM, CONFIRM_DIALOG, TOAST } from '../constants';
+import { BOOK_FORM, CONFIRM_DIALOG, DEBOUNCE, TOAST } from '../constants';
 
 // Utils
 import {
@@ -17,6 +17,9 @@ import {
   handleNegativeButtonClick,
   handleFormSubmit,
   removeChildNodes,
+  debounce,
+  validateField,
+  getCurrentFormData,
 } from '../utils';
 
 // Templates
@@ -32,13 +35,18 @@ import {
 
 //Types
 import {
+  AutoFillFormOptionElements,
   Book,
   BookFormMode,
+  CompareBook,
   DeleteBookHandler,
   EditFormHandlers,
+  RecommendBook,
   ShowFormHandlers,
   ToastOptions,
   ToastType,
+  ToggleTextHandler,
+  ValidationField,
 } from '@/types';
 
 export default class BookDetailsView {
@@ -81,16 +89,91 @@ export default class BookDetailsView {
     updateDOMElement(this.mainContent, bookDetailsWrapper);
   }
 
+  displayRecommendationBooks = (bookListWrapper: HTMLUListElement, books: RecommendBook[]) => {
+    while (bookListWrapper.firstChild) {
+      bookListWrapper.removeChild(bookListWrapper.firstChild);
+    }
+
+    if (books.length > 0) {
+      books.forEach((book) => {
+        if (book.language !== 'vi') {
+          const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
+          recommendBookItem.textContent = book.title;
+          bookListWrapper.appendChild(recommendBookItem);
+        }
+      });
+    }
+  };
+
+  autoFillRecommendBook = (
+    bookListElement: HTMLUListElement,
+    optionElements: AutoFillFormOptionElements,
+    recommendBooks: RecommendBook[],
+  ) => {
+    const {
+      nameInputElement,
+      authorsInputElement,
+      publishedDateInputElement,
+      descriptionInputElement,
+      validationInputElements,
+    } = optionElements;
+
+    //Prevent blur when clicking on item
+    bookListElement.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+    });
+
+    bookListElement.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+
+      if (target.classList.contains('book-recommendation-item')) {
+        const selectedRecommendBook = recommendBooks.find((book) => book.title === target.textContent);
+
+        if (selectedRecommendBook) {
+          // Update form value
+          nameInputElement.value = selectedRecommendBook.title;
+          authorsInputElement.value = selectedRecommendBook.authors.toString();
+          publishedDateInputElement.value = selectedRecommendBook.publishedDate;
+          descriptionInputElement.value = selectedRecommendBook.description;
+        }
+
+        // Validate field when auto field
+        validationInputElements.forEach((input) => {
+          validateField(
+            input,
+            input.getAttribute('data-field-name') as ValidationField,
+            input.value,
+            input.getAttribute('data-field-validate') as string,
+          );
+        });
+
+        this.hideRecommendationBooks(bookListElement);
+      }
+    });
+
+    nameInputElement.addEventListener('blur', () => {
+      this.hideRecommendationBooks(bookListElement);
+    });
+  };
+
+  hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
+    bookListWrapper.remove();
+  };
+
   showBookForm = (book: Book, mode: BookFormMode, showFormHandlers: ShowFormHandlers) => {
-    const { getImageUrlHandler, saveHandler } = showFormHandlers;
+    const { getImageUrlHandler, getRecommendBookHandler, saveHandler } = showFormHandlers;
 
     const formTitle = createBookFormTitle(book, mode);
     const bookFormModal = createBookFormModal(book, formTitle);
-    this.mainContent.appendChild(bookFormModal);
+    updateDOMElement(this.mainContent, bookFormModal);
 
-    const mainContent = this.mainContent;
     const form = getElement<HTMLFormElement>('#book-form');
     const inputElements = getElements<HTMLInputElement>('.input-box');
+    const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
+    const nameInputElement = getElement<HTMLInputElement>('.input-box[name="book-name"]');
+    const authorsInputElement = getElement<HTMLInputElement>('.input-box[name="book-authors"]');
+    const publishedDateInputElement = getElement<HTMLInputElement>('.input-box[name="book-published-date"]');
+    const descriptionInputElement = getElement<HTMLInputElement>('.input-box[name="book-description"]');
     const fileInputElement = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
     const hiddenFileInputElement = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
     const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
@@ -98,15 +181,81 @@ export default class BookDetailsView {
     const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
     const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
     const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
+    const booksRecommendation =
+      getElement<HTMLUListElement>('.book-recommendation-list') ||
+      createElement<HTMLUListElement>('ul', 'book-recommendation-list');
+
+    const originalData: CompareBook = {
+      name: book.name,
+      authors: book.authors.join(','),
+      publishedDate: book.publishedDate,
+      image: book.image,
+      description: book.description,
+    };
+
+    // Disable Save button when the data is not changed
+    if (mode === BOOK_FORM.MODE.EDIT_BOOK) {
+      positiveButton.disabled = true;
+
+      const currentData = getCurrentFormData(inputElements);
+      const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
+
+      const debouncedCompare = debounce(() => {
+        if (!isSameData) {
+          positiveButton.disabled = false;
+        } else {
+          positiveButton.disabled = true;
+        }
+      }, DEBOUNCE.DELAY_TIME);
+
+      inputElements.forEach((input) => {
+        input.addEventListener('input', () => {
+          debouncedCompare();
+        });
+      });
+    }
+
+    nameInputElement.addEventListener(
+      'input',
+
+      debounce(async (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        const query = target.value.trim();
+
+        if (query) {
+          const recommendBooks = await getRecommendBookHandler(query);
+          this.displayRecommendationBooks(booksRecommendation, recommendBooks as RecommendBook[]);
+          if (!booksRecommendation.parentElement) {
+            updateDOMElement(nameInputGroup, booksRecommendation);
+          }
+
+          //autofill recommended book
+          const optionElements = {
+            nameInputElement,
+            authorsInputElement,
+            publishedDateInputElement,
+            descriptionInputElement,
+            validationInputElements: inputElements,
+          };
+
+          this.autoFillRecommendBook(booksRecommendation, optionElements, recommendBooks as RecommendBook[]);
+        } else {
+          if (booksRecommendation.parentElement) {
+            this.hideRecommendationBooks(booksRecommendation);
+          }
+        }
+      }, DEBOUNCE.DELAY_TIME),
+    );
 
     const fileChangeOptionElements = {
+      fileInputElement,
+      hiddenFileInputElement,
       bookNamePreview,
       bookImgPreview,
-      hiddenFileInputElement,
       uploadBtn,
       positiveButton,
     };
-    const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton, mainContent };
+    const formSubmitOptionElements = { inputElements, bookFormModal, positiveButton };
 
     handleFileInputChange(fileInputElement, fileChangeOptionElements, getImageUrlHandler);
     handleInputValidation(inputElements);
@@ -115,23 +264,36 @@ export default class BookDetailsView {
   };
 
   bindEditBook = (editFormHandlers: EditFormHandlers) => {
-    const { getBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
+    const { getBookHandler, getRecommendBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
     this.mainContent.addEventListener('click', async (event) => {
       const btnEdit = (event.target as HTMLElement).closest('.btn-edit');
 
       if (btnEdit) {
-        const selectedBook = await getBookHandler(parseInt(this.bookId));
+        const selectedBook = (await getBookHandler(parseInt(this.bookId))) as Book;
 
         if (selectedBook instanceof Error) return;
 
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
+          getRecommendBookHandler,
           saveHandler: async (data: Omit<Book, 'id'>) => {
             editBookHandler(parseInt(this.bookId), data);
           },
         };
 
         this.showBookForm(selectedBook, BOOK_FORM.MODE.EDIT_BOOK, showFormHandlers);
+      }
+    });
+  };
+
+  bindToggleText = (handler: ToggleTextHandler) => {
+    this.mainContent.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const btnShowDescription = target.closest('.btn-show-description') as HTMLButtonElement;
+      const textDescriptionElement = getElement('.book-details-description');
+
+      if (btnShowDescription) {
+        handler(parseInt(this.bookId), textDescriptionElement, btnShowDescription);
       }
     });
   };

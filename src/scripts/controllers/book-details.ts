@@ -2,7 +2,7 @@ import BookModel from '@/models/book';
 import BookDetailsView from '@/views/book-details';
 
 import { Book, EditFormHandlers } from '@/types';
-import { TOAST } from '@/constants';
+import { TOAST, BOOK_DESCRIPTION } from '@/constants';
 
 export default class BookDetailsController {
   private bookModel: BookModel;
@@ -15,6 +15,7 @@ export default class BookDetailsController {
 
     this.editFormHandlers = {
       getBookHandler: this.handleGetBookById,
+      getRecommendBookHandler: this.handleGetRecommendBooks,
       getImageUrlHandler: this.handleGetImageUrl,
       editBookHandler: this.handleEditBook,
     };
@@ -24,6 +25,7 @@ export default class BookDetailsController {
     await this.displayBookDetails();
     this.bookDetailsView.bindEditBook(this.editFormHandlers);
     this.bookDetailsView.bindDeleteBook(this.handleDeleteBook);
+    this.bookDetailsView.bindToggleText(this.handleToggleText);
   }
 
   displayBookDetails = async () => {
@@ -38,6 +40,19 @@ export default class BookDetailsController {
         this.bookDetailsView.bindRequestError(error.message);
       } else {
         this.bookDetailsView.bindRequestError(error as string);
+      }
+    }
+  };
+
+  handleGetRecommendBooks = async (query: string) => {
+    try {
+      const response = await this.bookModel.getRecommendBooks(query);
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
+      } else {
+        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
       }
     }
   };
@@ -62,6 +77,22 @@ export default class BookDetailsController {
       } else {
         this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
       }
+    }
+  };
+
+  handleToggleText = async (
+    bookId: number,
+    textDescriptionElement: HTMLElement,
+    btnShowDescriptionElement: HTMLButtonElement,
+  ): Promise<void> => {
+    const book: Book = await this.handleGetBookById(bookId);
+
+    if (btnShowDescriptionElement.textContent === BOOK_DESCRIPTION.BUTTON_TEXT.SHOW_MORE) {
+      textDescriptionElement.textContent = book.description;
+      btnShowDescriptionElement.textContent = BOOK_DESCRIPTION.BUTTON_TEXT.SHOW_LESS;
+    } else {
+      textDescriptionElement.textContent = book.description.slice(0, BOOK_DESCRIPTION.LIMIT_CHARACTER);
+      btnShowDescriptionElement.textContent = BOOK_DESCRIPTION.BUTTON_TEXT.SHOW_MORE;
     }
   };
 

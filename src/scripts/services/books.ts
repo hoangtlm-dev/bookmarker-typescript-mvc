@@ -7,13 +7,14 @@ import { Book, ImgBBApiResponse, RecommendBook } from '@/types';
 // Utils
 import { httpRequest } from '@/utils';
 
+// Api key
+const uploadImageApiKey = process.env.IMG_UPLOAD_KEY;
+const recommendBookAPIKey = process.env.RECOMMEND_BOOK_API_KEY;
+
 // Api path
 const bookApiUrl = `${process.env.BASE_API_URL}/${API_PATH.BOOKS}`;
-const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${process.env.IMG_UPLOAD_KEY}`;
-const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL as string;
-
-// Api key
-const recommendBookAPIKey = process.env.RECOMMEND_BOOK_API_KEY as string;
+const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${uploadImageApiKey}`;
+const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL;
 
 export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
