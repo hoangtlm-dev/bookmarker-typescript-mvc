@@ -9,9 +9,9 @@ import {
   CompareBook,
   DeleteBookHandler,
   EditFormHandlers,
+  FormHandleElements,
   NavigateBookDetailsHandlers,
   PageChangeHandler,
-  RecommendBook,
   SearchBookHandler,
   ShowFormHandlers,
   SortBookHandler,
@@ -21,7 +21,6 @@ import {
 
 // Utils
 import {
-  autoFillRecommendBook,
   createBookFormModal,
   createBookFormTitle,
   createElement,
@@ -32,12 +31,13 @@ import {
   handleFileInputChange,
   handleFormSubmit,
   handleInputValidation,
+  handleNameInputChange,
   handleNegativeButtonClick,
   hideModal,
-  hideRecommendationBooks,
   removeChildNodes,
   removeDOMElement,
   removeDOMElementBySelector,
+  // showBookForm,
   showModal,
   showToast,
   updateDOMElement,
@@ -157,22 +157,6 @@ export default class BookListView {
     }
   };
 
-  displayRecommendationBooks = (bookListWrapper: HTMLUListElement, books: RecommendBook[]) => {
-    while (bookListWrapper.firstChild) {
-      bookListWrapper.removeChild(bookListWrapper.firstChild);
-    }
-
-    if (books.length > 0) {
-      books.forEach((book) => {
-        if (book.language !== 'vi') {
-          const recommendBookItem = createElement('li', 'text-description book-recommendation-item');
-          recommendBookItem.textContent = book.title;
-          bookListWrapper.appendChild(recommendBookItem);
-        }
-      });
-    }
-  };
-
   bindPageChange = (handler: PageChangeHandler) => {
     this.mainContent.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
@@ -234,11 +218,51 @@ export default class BookListView {
     });
   };
 
+  getFormHandleElements = (): FormHandleElements => {
+    const form = getElement<HTMLFormElement>('#book-form');
+    const inputElements = getElements<HTMLInputElement>('.input-box');
+    const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
+    const nameInputElement = getElement<HTMLInputElement>('.input-box[name="book-name"]');
+    const authorsInputElement = getElement<HTMLInputElement>('.input-box[name="book-authors"]');
+    const publishedDateInputElement = getElement<HTMLInputElement>('.input-box[name="book-published-date"]');
+    const descriptionInputElement = getElement<HTMLInputElement>('.input-box[name="book-description"]');
+    const fileInputElement = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
+    const hiddenFileInputElement = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
+    const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
+    const bookNamePreview = getElement('.book-name-preview');
+    const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
+    const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
+    const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
+    const booksRecommendation =
+      getElement<HTMLUListElement>('.book-recommendation-list') ||
+      createElement<HTMLUListElement>('ul', 'book-recommendation-list');
+
+    return {
+      form,
+      inputElements,
+      nameInputGroup,
+      nameInputElement,
+      authorsInputElement,
+      publishedDateInputElement,
+      descriptionInputElement,
+      fileInputElement,
+      hiddenFileInputElement,
+      bookImgPreview,
+      bookNamePreview,
+      uploadBtn,
+      positiveButton,
+      negativeButton,
+      booksRecommendation,
+    };
+  };
+
   bindAddBook = (addFormHandlers: AddFormHandlers) => {
     const { getImageUrlHandler, getRecommendBookHandler, addBookHandler } = addFormHandlers;
 
     this.createBtn.addEventListener('click', (event) => {
       event.preventDefault();
+
+      // Get form handles elements
 
       const showFormHandlers: ShowFormHandlers = {
         getImageUrlHandler,
@@ -256,11 +280,11 @@ export default class BookListView {
     this.mainContent.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       const btnViewDetails = target.closest('.btn-view-details');
-      const bookItem = target.closest('.book-item')!;
-      const bookIdString = bookItem.getAttribute('data-book-id')!;
-      const bookId = parseInt(bookIdString);
 
       if (btnViewDetails) {
+        const bookItem = target.closest('.book-item') as HTMLElement;
+        const bookIdString = bookItem.getAttribute('data-book-id') as string;
+        const bookId = parseInt(bookIdString);
         handler(bookId);
       }
     });
@@ -268,6 +292,8 @@ export default class BookListView {
 
   bindEditBook = (editFormHandlers: EditFormHandlers) => {
     const { getBookHandler, getRecommendBookHandler, getImageUrlHandler, editBookHandler } = editFormHandlers;
+
+    // Get form handles elements
     this.mainContent.addEventListener('click', async (event) => {
       const target = event.target as HTMLElement;
 
@@ -294,7 +320,7 @@ export default class BookListView {
         const showFormHandlers: ShowFormHandlers = {
           getImageUrlHandler,
           getRecommendBookHandler,
-          saveHandler: async (data: Omit<Book, 'id'>) => {
+          saveHandler: (data: Omit<Book, 'id'>) => {
             editBookHandler(bookId, data);
           },
         };
@@ -312,23 +338,25 @@ export default class BookListView {
     const bookFormModal = createBookFormModal(book, formTitle);
     updateDOMElement(this.mainContent, bookFormModal);
 
-    const form = getElement<HTMLFormElement>('#book-form');
-    const inputElements = getElements<HTMLInputElement>('.input-box');
-    const nameInputGroup = getElement<HTMLDivElement>('.input-group.book-name');
-    const nameInputElement = getElement<HTMLInputElement>('.input-box[name="book-name"]');
-    const authorsInputElement = getElement<HTMLInputElement>('.input-box[name="book-authors"]');
-    const publishedDateInputElement = getElement<HTMLInputElement>('.input-box[name="book-published-date"]');
-    const descriptionInputElement = getElement<HTMLInputElement>('.input-box[name="book-description"]');
-    const fileInputElement = getElement<HTMLInputElement>(`#${BOOK_FORM.FILE_INPUT_ID}`);
-    const hiddenFileInputElement = getElement<HTMLInputElement>('.book-form input[type="hidden"]');
-    const bookImgPreview = getElement<HTMLImageElement>('.book-img-preview');
-    const bookNamePreview = getElement('.book-name-preview');
-    const uploadBtn = getElement<HTMLButtonElement>('#btn-upload');
-    const positiveButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.POSITIVE_BUTTON_ID}`);
-    const negativeButton = getElement<HTMLButtonElement>(`#${BOOK_FORM.NEGATIVE_BUTTON_ID}`);
-    const booksRecommendation =
-      getElement<HTMLUListElement>('.book-recommendation-list') ||
-      createElement<HTMLUListElement>('ul', 'book-recommendation-list');
+    // Get form handle elements
+    const formHandleElements: FormHandleElements = this.getFormHandleElements();
+    const {
+      form,
+      inputElements,
+      nameInputGroup,
+      nameInputElement,
+      authorsInputElement,
+      publishedDateInputElement,
+      descriptionInputElement,
+      fileInputElement,
+      hiddenFileInputElement,
+      bookImgPreview,
+      bookNamePreview,
+      uploadBtn,
+      positiveButton,
+      negativeButton,
+      booksRecommendation,
+    } = formHandleElements;
 
     const originalData: CompareBook = {
       name: book.name,
@@ -343,38 +371,18 @@ export default class BookListView {
       handleDisablePositiveButton(inputElements, positiveButton, originalData);
     }
 
-    nameInputElement.addEventListener(
-      'input',
-
-      debounce(async (event: Event) => {
-        const target = event.target as HTMLInputElement;
-        const query = target.value.trim();
-
-        if (query) {
-          const recommendBooks = await getRecommendBookHandler(query);
-          this.displayRecommendationBooks(booksRecommendation, recommendBooks as RecommendBook[]);
-
-          if (!booksRecommendation.parentElement) {
-            updateDOMElement(nameInputGroup, booksRecommendation);
-          }
-
-          //autofill recommended book
-          const formDataElements = {
-            nameInputElement,
-            authorsInputElement,
-            publishedDateInputElement,
-            descriptionInputElement,
-            validationInputElements: inputElements,
-          };
-
-          autoFillRecommendBook(booksRecommendation, formDataElements, recommendBooks as RecommendBook[]);
-        } else {
-          if (booksRecommendation.parentElement) {
-            hideRecommendationBooks(booksRecommendation);
-          }
-        }
-      }, DEBOUNCE.DELAY_TIME),
-    );
+    // Handle change for file name
+    const nameInputChangeElements = {
+      nameInputGroup,
+      booksRecommendation,
+      nameInputElement,
+      authorsInputElement,
+      publishedDateInputElement,
+      descriptionInputElement,
+      inputElements,
+    };
+    const booksRecommendationItemClass = 'text-description book-recommendation-item';
+    handleNameInputChange(nameInputChangeElements, booksRecommendationItemClass, getRecommendBookHandler);
 
     const fileChangeOptionElements = {
       fileInputElement,

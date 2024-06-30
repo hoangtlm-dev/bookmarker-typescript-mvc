@@ -4,7 +4,7 @@ export type PageChangeHandler = (pageNumber: number) => void;
 
 export type AddBookHandler = (data: Omit<Book, 'id'>) => void;
 
-export type GetImageUrlHandler = (formData: FormData) => Promise<string>;
+export type GetImageUrlHandler = (formData: FormData) => Promise<string | undefined>;
 
 export type GetBookHandler = (bookId: number) => Promise<Book | undefined>;
 
@@ -15,6 +15,8 @@ export type GetRecommendBookHandler = (query: string) => Promise<RecommendBook[]
 export type SearchBookHandler = (keyword: string) => void;
 
 export type NavigateBookDetailsHandlers = (bookId: number) => void;
+
+export type NavigateHomeHandler = () => void;
 
 export type SortBookHandler = (sortStatus: string) => void;
 

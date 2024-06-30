@@ -2,7 +2,7 @@ import BookModel from '@/models/book';
 import BookDetailsView from '@/views/book-details';
 
 import { Book, EditFormHandlers } from '@/types';
-import { TOAST, BOOK_DESCRIPTION } from '@/constants';
+import { TOAST, BOOK_DESCRIPTION, ROUTES } from '@/constants';
 
 export default class BookDetailsController {
   private bookModel: BookModel;
@@ -26,6 +26,7 @@ export default class BookDetailsController {
     this.bookDetailsView.bindEditBook(this.editFormHandlers);
     this.bookDetailsView.bindDeleteBook(this.handleDeleteBook);
     this.bookDetailsView.bindToggleText(this.handleToggleText);
+    this.bookDetailsView.bindNavigationHome(this.handleNavigateHome);
   }
 
   displayBookDetails = async () => {
@@ -34,13 +35,9 @@ export default class BookDetailsController {
 
     try {
       const response = await this.handleGetBookById(parseInt(bookId));
-      this.bookDetailsView.getBookDetails(response);
+      this.bookDetailsView.getBookDetails(response as Book);
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookDetailsView.bindRequestError(error.message);
-      } else {
-        this.bookDetailsView.bindRequestError(error as string);
-      }
+      this.bookDetailsView.bindRequestError(error as string);
     }
   };
 
@@ -49,22 +46,29 @@ export default class BookDetailsController {
       const response = await this.bookModel.getRecommendBooks(query);
       return response;
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookDetailsView.bindRequestError(error as string);
+      this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
   handleGetBookById = async (bookId: number) => {
-    const response = await this.bookModel.getBookById(bookId);
-    return response;
+    try {
+      const response = await this.bookModel.getBookById(bookId);
+      return response;
+    } catch (error) {
+      this.bookDetailsView.bindRequestError(error as string);
+      this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+    }
   };
 
   handleGetImageUrl = async (fileUpload: FormData) => {
-    const response = await this.bookModel.getImageUrl(fileUpload);
-    return response;
+    try {
+      const response = await this.bookModel.getImageUrl(fileUpload);
+      return response;
+    } catch (error) {
+      this.bookDetailsView.bindRequestError(error as string);
+      this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+    }
   };
 
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
@@ -72,11 +76,8 @@ export default class BookDetailsController {
       await this.bookModel.editBook(bookId, bookData);
       this.displayBookDetails();
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookDetailsView.bindRequestError(error as string);
+      this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
@@ -85,7 +86,7 @@ export default class BookDetailsController {
     textDescriptionElement: HTMLElement,
     btnShowDescriptionElement: HTMLButtonElement,
   ): Promise<void> => {
-    const book: Book = await this.handleGetBookById(bookId);
+    const book = (await this.handleGetBookById(bookId)) as Book;
 
     if (btnShowDescriptionElement.textContent === BOOK_DESCRIPTION.BUTTON_TEXT.SHOW_MORE) {
       textDescriptionElement.textContent = book.description;
@@ -96,19 +97,20 @@ export default class BookDetailsController {
     }
   };
 
+  handleNavigateHome = () => {
+    window.location.href = ROUTES.HOME;
+  };
+
   handleDeleteBook = async (bookId: number) => {
     try {
       await this.bookModel.deleteBook(bookId);
 
       setTimeout(() => {
-        window.location.href = '/';
+        this.handleNavigateHome();
       }, 2000);
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookDetailsView.bindRequestError(error as string);
+      this.bookDetailsView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 }
