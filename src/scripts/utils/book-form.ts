@@ -11,6 +11,8 @@ import {
   FileChangeOptionElements,
   FormSubmitOptionElements,
   GetImageUrlHandler,
+  GetRecommendBookHandler,
+  NameInputChangeElements,
   RecommendBook,
   ValidationField,
 } from '@/types';
@@ -93,7 +95,7 @@ export const updateFileInputData = (
   hiddenFileInputElement.value = imageUrl;
 
   if (hiddenFileInputElement) {
-    validateField(hiddenFileInputElement, 'imageUrl', imageUrl, "Book's image");
+    validateField(hiddenFileInputElement, 'image', imageUrl, "Book's image");
   }
 
   positiveButton.disabled = false;
@@ -121,7 +123,7 @@ export const handleFileInputChange = (
 
     const imageUrl = await getImageUrlHandler(formData);
 
-    updateFileInputData(file, imageUrl, fileChangeOptionElements);
+    updateFileInputData(file, imageUrl as string, fileChangeOptionElements);
     removeDOMElement(fileChangeOptionElements.bookNamePreview, spinner);
   });
 };
@@ -138,17 +140,6 @@ export const handleInputValidation = (inputElements: NodeListOf<HTMLInputElement
 
 export const handleNegativeButtonClick = (negativeButton: HTMLButtonElement, bookFormModal: HTMLElement) => {
   negativeButton.addEventListener('click', () => hideModal(bookFormModal));
-};
-
-export const isDataEqual = <T>(obj1: T, obj2: T, attributes: (keyof T)[]) => {
-  return attributes.every((attr) => {
-    const value1 = obj1[attr];
-    const value2 = obj2[attr];
-    if (Array.isArray(value1) && Array.isArray(value2)) {
-      return JSON.stringify(value1) === JSON.stringify(value2);
-    }
-    return value1 === value2;
-  });
 };
 
 export const autoFillRecommendBook = (
@@ -202,8 +193,80 @@ export const autoFillRecommendBook = (
   });
 };
 
+export const displayRecommendationBooks = (
+  bookListWrapper: HTMLUListElement,
+  books: RecommendBook[],
+  recommendationBookClass: string,
+) => {
+  while (bookListWrapper.firstChild) {
+    bookListWrapper.removeChild(bookListWrapper.firstChild);
+  }
+
+  if (books.length > 0) {
+    books.forEach((book) => {
+      if (book.language !== 'vi') {
+        const recommendBookItem = createElement('li', recommendationBookClass);
+        recommendBookItem.textContent = book.title;
+        bookListWrapper.appendChild(recommendBookItem);
+      }
+    });
+  }
+};
+
 export const hideRecommendationBooks = (bookListWrapper: HTMLUListElement) => {
   bookListWrapper.remove();
+};
+
+export const handleNameInputChange = (
+  nameInputChangeElements: NameInputChangeElements,
+  booksRecommendationItemClass: string,
+  getRecommendBookHandler: GetRecommendBookHandler,
+) => {
+  const {
+    nameInputGroup,
+    booksRecommendation,
+    nameInputElement,
+    authorsInputElement,
+    publishedDateInputElement,
+    descriptionInputElement,
+    inputElements,
+  } = nameInputChangeElements;
+
+  nameInputElement.addEventListener(
+    'input',
+    debounce(async (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const query = target.value.trim();
+
+      if (query) {
+        const recommendBooks = await getRecommendBookHandler(query);
+        displayRecommendationBooks(
+          booksRecommendation,
+          recommendBooks as RecommendBook[],
+          booksRecommendationItemClass,
+        );
+
+        if (!booksRecommendation.parentElement) {
+          updateDOMElement(nameInputGroup, booksRecommendation);
+        }
+
+        // autofill recommended book
+        const formDataElements = {
+          nameInputElement,
+          authorsInputElement,
+          publishedDateInputElement,
+          descriptionInputElement,
+          validationInputElements: inputElements,
+        };
+
+        autoFillRecommendBook(booksRecommendation, formDataElements, recommendBooks as RecommendBook[]);
+      } else {
+        if (booksRecommendation.parentElement) {
+          hideRecommendationBooks(booksRecommendation);
+        }
+      }
+    }, DEBOUNCE.DELAY_TIME),
+  );
 };
 
 export const handleDisablePositiveButton = (

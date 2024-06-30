@@ -1,5 +1,5 @@
 // Constants
-import { PAGINATION, SORT, TOAST } from '@/constants';
+import { PAGINATION, ROUTES, SORT, TOAST } from '@/constants';
 
 //Types
 import { AddFormHandlers, Book, EditFormHandlers } from '@/types';
@@ -63,16 +63,12 @@ export default class BookListController {
 
       this.updateBookList(this.renderBooks);
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindRequestError(error.message);
-      } else {
-        this.bookListView.bindRequestError(error as string);
-      }
+      this.bookListView.bindRequestError(error as string);
     }
   };
 
   handleNavigateBookDetails = (bookId: number) => {
-    window.location.href = `/book-details?id=${bookId}`;
+    window.location.href = ROUTES.BOOK_DETAILS(bookId);
   };
 
   updateBookList = (bookList: Book[]) => {
@@ -92,11 +88,7 @@ export default class BookListController {
       await this.bookModel.addBook(data);
       await this.displayBookList();
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
@@ -105,17 +97,19 @@ export default class BookListController {
       const response = await this.bookModel.getRecommendBooks(query);
       return response;
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookListView.bindRequestError(error as string);
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
   handleGetImageUrl = async (fileUpload: FormData) => {
-    const response = await this.bookModel.getImageUrl(fileUpload);
-    return response ?? '';
+    try {
+      const response = await this.bookModel.getImageUrl(fileUpload);
+      return response;
+    } catch (error) {
+      this.bookListView.bindRequestError(error as string);
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
+    }
   };
 
   handleGetBookById = async (bookId: number) => {
@@ -123,11 +117,8 @@ export default class BookListController {
       const response = await this.bookModel.getBookById(bookId);
       return response;
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookListView.bindRequestError(error as string);
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
@@ -169,11 +160,8 @@ export default class BookListController {
 
       this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.EDITED_BOOK);
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookListView.bindRequestError(error as string);
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 
@@ -198,11 +186,8 @@ export default class BookListController {
 
       this.updateBookList(this.renderBooks);
     } catch (error) {
-      if (error instanceof Error) {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error.message);
-      } else {
-        this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
-      }
+      this.bookListView.bindRequestError(error as string);
+      this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
   };
 }

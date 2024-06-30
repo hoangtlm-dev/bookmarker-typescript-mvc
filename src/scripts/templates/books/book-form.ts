@@ -43,7 +43,7 @@ export const bookFormTemplate = (book: Book, options: Partial<BookOptions>) => {
             <span class="upload-text text-sub-heading text-light">Upload</span>
           </button>
           <input id=${fileInputId} accept="image/*" type="file"/>
-          <input type="hidden" class="input-box" name="book-image" data-field-name="imageUrl" data-field-validate="Book's image" value="${image}"/>
+          <input type="hidden" class="input-box" name="book-image" data-field-name="image" data-field-validate="Book's image" value="${image}"/>
           <div class="book-preview">
             <span class="text-description book-name-preview"></span>
             <img class="book-img-preview" src="${image}" alt="${name}"/>

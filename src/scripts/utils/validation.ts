@@ -13,7 +13,7 @@ const rules: ValidationRule = {
     isRequired: true,
     isFutureDate: (value: string) => value && new Date(value) > new Date(),
   },
-  imageUrl: {
+  image: {
     isRequired: true,
   },
   description: {

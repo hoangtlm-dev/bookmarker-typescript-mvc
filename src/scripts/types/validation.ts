@@ -10,7 +10,7 @@ export type ValidationRule = {
     isRequired: boolean;
     isFutureDate: (value: string) => boolean | '';
   };
-  imageUrl: {
+  image: {
     isRequired: boolean;
   };
   description: {

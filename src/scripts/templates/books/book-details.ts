@@ -17,9 +17,7 @@ export const generateBookDetails = (book: Book) => {
       </figure>
       <div class="book-details-action">
         <button class="btn btn-square btn-secondary btn-back">
-          <a href='/'>
-            <img loading="lazy" src=${backIcon} alt="Back"/>
-          </a>
+          <img loading="lazy" src=${backIcon} alt="Back"/>
         </button>
         <button class="btn btn-square btn-danger btn-delete">
           <img loading="lazy" src=${deleteIcon} alt="Delete"/>

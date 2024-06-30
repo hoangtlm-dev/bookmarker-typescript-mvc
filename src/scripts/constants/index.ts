@@ -8,3 +8,4 @@ export * from './debounce';
 export * from './sort';
 export * from './confirm-dialog';
 export * from './book-description';
+export * from './routes';
