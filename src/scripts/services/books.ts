@@ -1,41 +1,51 @@
 // Constants
-import { HTTP_REQUEST, API_PATH } from '@/constants';
+import { HTTP_REQUEST, PATHS } from '@/constants';
 
 // Types
 import { Book, ImgBBApiResponse, RecommendBook } from '@/types';
 
 // Utils
-import { httpRequest } from '@/utils';
+import { getEnvValue, httpRequest } from '@/utils';
 
 // Api key
-const uploadImageApiKey = process.env.IMG_UPLOAD_KEY;
-const recommendBookAPIKey = process.env.RECOMMEND_BOOK_API_KEY;
+const recommendBookApiKey = getEnvValue('RECOMMEND_BOOK_API_KEY');
+const uploadImageApiKey = getEnvValue('IMG_UPLOAD_API_KEY');
 
 // Api path
-const bookApiUrl = `${process.env.BASE_API_URL}/${API_PATH.BOOKS}`;
-const uploadImageUrl = `${process.env.IMG_UPLOAD_URL}?key=${uploadImageApiKey}`;
-const recommendBookAPIUrl = process.env.RECOMMEND_BOOK_API_URL;
+const bookApiUrl = `${getEnvValue('BASE_API_URL')}/${PATHS.BOOKS}`;
+const uploadImageApiUrl = `${getEnvValue('IMG_UPLOAD_API_URL')}?key=${uploadImageApiKey}`;
+const recommendBookApiUrl = getEnvValue('RECOMMEND_BOOK_API_URL');
 
-export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
-  const response = await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
-  return response;
-};
+/**
+ * Adds a new book to the system.
+ *
+ * @param bookData - The book data excluding the ID.
+ * @returns - The newly added book object including its ID.
+ */
+export const addBookService = async (bookData: Omit<Book, 'id'>): Promise<Book> =>
+  await httpRequest<Omit<Book, 'id'>, Book>(bookApiUrl, HTTP_REQUEST.METHODS.POST, bookData);
 
-export const getBooksServices = async (params?: string): Promise<Book[]> => {
-  const response = await httpRequest<null, Book[]>(
-    params ? `${bookApiUrl}/${params}` : bookApiUrl,
-    HTTP_REQUEST.METHODS.GET,
-  );
-  return response;
-};
+/**
+ * Retrieves a list of all books from the system.
+ *
+ * @returns - An array of book objects.
+ */
+export const getBooksServices = async (): Promise<Book[]> =>
+  await httpRequest<null, Book[]>(bookApiUrl, HTTP_REQUEST.METHODS.GET);
 
+/**
+ * Retrieves a list of recommended books based on a search query.
+ *
+ * @param query - The search query.
+ * @returns - An array of recommended book objects.
+ */
 export const getRecommendBookServices = async (query: string): Promise<RecommendBook[]> => {
   const customHeaders = {
-    'API-key': recommendBookAPIKey,
+    'API-key': recommendBookApiKey,
   };
 
   const response = await httpRequest<{ query: string }, RecommendBook[]>(
-    recommendBookAPIUrl,
+    recommendBookApiUrl,
     HTTP_REQUEST.METHODS.POST,
     { query },
     customHeaders,
@@ -43,25 +53,38 @@ export const getRecommendBookServices = async (query: string): Promise<Recommend
   return response;
 };
 
-export const getBookByIdService = async (bookId: number): Promise<Book> => {
-  const response = await httpRequest<null, Book>(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.GET);
-  return response;
-};
+/**
+ * Retrieves detailed information about a book by its ID.
+ *
+ * @param bookId - The ID of the book.
+ * @returns - A book object.
+ */
+export const getBookByIdService = async (bookId: number): Promise<Book> =>
+  await httpRequest<null, Book>(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.GET);
 
-export const editBookService = async (bookId: number, bookData: Omit<Book, 'id'>): Promise<Book> => {
-  const response = await httpRequest<Omit<Book, 'id'>, Book>(
-    `${bookApiUrl}/${bookId}`,
-    HTTP_REQUEST.METHODS.PUT,
-    bookData,
-  );
-  return response;
-};
+/**
+ * Uploads an image and returns its URL.
+ *
+ * @param formData - The image data in FormData format.
+ * @returns - The URL of the uploaded image.
+ */
+export const getImageUrlServices = async (formData: FormData): Promise<string> =>
+  (await httpRequest<FormData, ImgBBApiResponse>(uploadImageApiUrl, HTTP_REQUEST.METHODS.POST, formData)).data.url;
 
-export const deleteBookService = async (bookId: number): Promise<void> => {
+/**
+ * Edits the information of an existing book.
+ *
+ * @param bookId - The ID of the book.
+ * @param bookData - The book data excluding the ID.
+ * @returns - The updated book object.
+ */
+export const editBookService = async (bookId: number, bookData: Omit<Book, 'id'>): Promise<Book> =>
+  await httpRequest<Omit<Book, 'id'>, Book>(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.PUT, bookData);
+
+/**
+ * Deletes a book from the system.
+ *
+ * @param bookId - The ID of the book.
+ */
+export const deleteBookService = async (bookId: number): Promise<void> =>
   await httpRequest(`${bookApiUrl}/${bookId}`, HTTP_REQUEST.METHODS.DELETE);
-};
-
-export const getImageUrlServices = async (formData: FormData) => {
-  const response = await httpRequest<FormData, ImgBBApiResponse>(uploadImageUrl, HTTP_REQUEST.METHODS.POST, formData);
-  return response.data.url;
-};

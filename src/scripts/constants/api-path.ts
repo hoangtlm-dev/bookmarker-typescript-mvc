@@ -1,3 +1,3 @@
-export const API_PATH = {
+export const PATHS = {
   BOOKS: 'books',
-} as const;
+};
