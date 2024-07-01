@@ -1,15 +1,21 @@
-// Icons
+// Types
 import { Book } from '@/types';
 
 // Utils
 import { getHours } from '../../utils';
 
-interface Icons {
+interface ActionIcons {
   viewDetailsIcon: string;
   deleteIcon: string;
 }
 
-export const generateBookItem = (book: Book, icons: Icons) => {
+/**
+ *
+ * @param book - an object representing the book following the attributes defined in the types folder,
+ * @param icons - an object containing URLs and for action icons.
+ * @returns - an HTML string that represents the book item.
+ */
+export const generateBookItem = (book: Book, icons: ActionIcons): string => {
   const { name, description, image, updatedAt } = book;
 
   const { viewDetailsIcon, deleteIcon } = icons;
@@ -20,10 +26,10 @@ export const generateBookItem = (book: Book, icons: Icons) => {
       <p class="text-description text-truncate book-description">${description}</p>
       <div class="book-item-action">
         <button class="btn btn-square btn-secondary btn-view-details">
-          <img loading="lazy" src=${viewDetailsIcon} alt="View Details" />
+          <img loading="lazy" src=${viewDetailsIcon} alt="view details" />
         </button>
         <button class="btn btn-square btn-danger btn-delete">
-          <img loading="lazy" src=${deleteIcon} alt="Delete" />
+          <img loading="lazy" src=${deleteIcon} alt="delete" />
         </button>
       </div>
     </div>

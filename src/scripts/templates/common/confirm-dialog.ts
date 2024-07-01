@@ -1,7 +1,29 @@
-import { ConfirmDialogOptions } from '@/types';
+interface ConfirmDialogOptions {
+  positiveButtonId: string;
+  negativeButtonId: string;
+  positiveText: string;
+  negativeText: string;
+}
 
-export const generateConfirmDialog = (message: string, description: string, options: Partial<ConfirmDialogOptions>) => {
-  const { positiveButtonId, negativeButtonId, positiveText, negativeText } = options;
+/**
+ * Generates a confirm dialog HTML string.
+ *
+ * @param message - The main message or title of the confirm dialog.
+ * @param description - The description or body text of the confirm dialog.
+ * @param options - The options for customizing the confirm dialog.
+ * @returns - The HTML string representing the confirm dialog.
+ */
+export const generateConfirmDialog = (
+  message: string,
+  description: string,
+  options: Partial<ConfirmDialogOptions> = {},
+): string => {
+  const {
+    positiveButtonId = 'btn-confirm',
+    negativeButtonId = 'btn-cancel',
+    positiveText = 'OK',
+    negativeText = 'Cancel',
+  } = options;
 
   return `
     <div class="confirm-dialog">

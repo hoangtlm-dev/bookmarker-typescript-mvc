@@ -1,18 +1,28 @@
-import closeIcon from '../../../assets/icons/close.svg';
+// Constanst
+import { ToastType } from '@/constants';
 
-// Types
-import { ToastOptions } from '@/types';
+interface ToastOptions {
+  closeButtonId: string;
+}
 
-// Constants
-import { TOAST } from '../../constants';
-
-export const defaultToastOptions: ToastOptions = {
-  type: TOAST.TYPE.SUCCESS,
-  closeButtonId: TOAST.CLOSE_BUTTON_ID,
-};
-
-export const toastTemplate = (message: string, description: string, options: ToastOptions = defaultToastOptions) => {
-  const { type, closeButtonId } = options;
+/**
+ * Generates an HTML string for toast content.
+ *
+ * @param {ToastType} type - The type of toast to be displayed.
+ * @param {string} message - A main message to be displayed in the toast.
+ * @param {string} description - A description or additional information to be displayed in the toast.
+ * @param {string} closeIcon - The URL or path to the close icon image.
+ * @param {Partial<ToastOptions>} options - Optional parameters for customizing the toast.
+ * @returns {string} - An HTML string representing the toast.
+ */
+export const generateToastContent = (
+  type: ToastType,
+  message: string,
+  description: string,
+  closeIcon: string,
+  options: Partial<ToastOptions> = {},
+): string => {
+  const { closeButtonId = 'btn-close' } = options;
 
   return `
     <div class="toast-container ${type}">

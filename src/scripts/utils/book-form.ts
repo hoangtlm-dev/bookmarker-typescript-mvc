@@ -18,7 +18,7 @@ import {
 } from '@/types';
 
 //Templates
-import { bookFormTemplate, modalContentTemplate } from '@/templates';
+import { bookFormTemplate, generateModalContent } from '@/templates';
 
 // Utils
 import {
@@ -41,7 +41,7 @@ export const createBookFormTitle = (book: Book, mode: BookFormMode) => {
 
 export const createBookFormModal = (book: Book, formTitle: string) => {
   const bookForm = bookFormTemplate(book, { formTitle });
-  const bookFormContent = modalContentTemplate(bookForm);
+  const bookFormContent = generateModalContent(bookForm);
   const bookFormModal = createElement('div', 'modal');
   showModal(bookFormModal, bookFormContent);
   return bookFormModal;
@@ -51,14 +51,15 @@ export const getCurrentFormData = (
   inputElements: NodeListOf<HTMLInputElement>,
   fileChangeOptionElements?: FileChangeOptionElements,
   getImageUrlHandler?: GetImageUrlHandler,
-) => {
+): { [key: string]: string } => {
   const currentFormData: { [key: string]: string } = {};
 
   inputElements.forEach((input) => {
     if (input.type === 'file' && fileChangeOptionElements && getImageUrlHandler) {
       handleFileInputChange(input, fileChangeOptionElements, getImageUrlHandler);
     }
-    currentFormData[input.getAttribute('data-field-name') as string] = input.value;
+
+    currentFormData[input.getAttribute('data-field-name') as string] = input.value.trim();
   });
 
   return currentFormData;
@@ -276,19 +277,19 @@ export const handleDisablePositiveButton = (
 ) => {
   positiveButton.disabled = true;
 
-  const currentData = getCurrentFormData(inputElements);
-  const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
-
-  const debouncedCompare = debounce(() => {
-    if (!isSameData) {
-      positiveButton.disabled = false;
-    } else {
-      positiveButton.disabled = true;
-    }
-  }, DEBOUNCE.DELAY_TIME);
-
   inputElements.forEach((input) => {
     input.addEventListener('input', () => {
+      const currentData = getCurrentFormData(inputElements);
+      const isSameData = JSON.stringify(currentData) === JSON.stringify(originalData);
+
+      const debouncedCompare = debounce(() => {
+        if (!isSameData) {
+          positiveButton.disabled = false;
+        } else {
+          positiveButton.disabled = true;
+        }
+      }, DEBOUNCE.DELAY_TIME);
+
       debouncedCompare();
     });
   });

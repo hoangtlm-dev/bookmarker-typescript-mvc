@@ -8,6 +8,7 @@ import {
   BookFormMode,
   CompareBook,
   DeleteBookHandler,
+  DisplayBooksHandler,
   EditFormHandlers,
   FormHandleElements,
   NavigateBookDetailsHandlers,
@@ -15,7 +16,6 @@ import {
   SearchBookHandler,
   ShowFormHandlers,
   SortBookHandler,
-  ToastOptions,
   ToastType,
 } from '@/types';
 
@@ -45,20 +45,20 @@ import {
 
 // Templates
 import {
-  defaultToastOptions,
   generateBookItem,
   generateConfirmDialog,
   generateListEmpty,
+  generateModalContent,
   generatePagination,
   generateRequestError,
   generateSkeletonBookItem,
-  modalContentTemplate,
-  toastTemplate,
+  generateToastContent,
 } from '@/templates';
 
 // Icons
 import viewDetailsIcon from '../../assets/icons/right-forward.svg';
 import deleteIcon from '../../assets/icons/trash.svg';
+import closeIcon from '../../assets/icons/close.svg';
 
 // Constants
 import { BOOK_FORM, CONFIRM_DIALOG } from '@/constants';
@@ -90,20 +90,15 @@ export default class BookListView {
     this.mainContent.innerHTML = generateRequestError(message);
   };
 
-  bindToastMessage = (type: ToastType, message: string, description: string) => {
+  bindToastMessage = (type: ToastType, message: string, description: string): void => {
     const toastContainer = createElement('div', 'toast-container');
+    const toastContent = generateToastContent(type, message, description, closeIcon);
+    showToast(toastContainer, toastContent, TOAST.DURATION_TIME);
 
-    const options: ToastOptions = {
-      ...defaultToastOptions,
-      type,
-    };
-
-    showToast(toastContainer, toastTemplate(message, description, options), TOAST.DISPLAY_TIME);
-
-    this.mainContent.appendChild(toastContainer);
+    updateDOMElement(this.mainContent, toastContainer);
   };
 
-  displaySkeletonBooks = (count: number) => {
+  renderSkeletonBooks = (count: number) => {
     Array.from({ length: count }).forEach(() => {
       const skeletonBookItem = createElement('li', 'skeleton-book-item');
       skeletonBookItem.innerHTML = generateSkeletonBookItem();
@@ -111,7 +106,7 @@ export default class BookListView {
     });
   };
 
-  displayBooks = (bookList: Book[], booksShow: Book[], currentPage: number) => {
+  renderBooks = (bookList: Book[], booksShow: Book[], currentPage: number) => {
     while (this.bookList.firstChild) {
       this.bookList.removeChild(this.bookList.firstChild);
     }
@@ -156,6 +151,8 @@ export default class BookListView {
       }
     }
   };
+
+  bindDisplayBooks = (handler: DisplayBooksHandler) => handler();
 
   bindPageChange = (handler: PageChangeHandler) => {
     this.mainContent.addEventListener('click', (event) => {
@@ -421,7 +418,7 @@ export default class BookListView {
           CONFIRM_DIALOG.DESCRIPTION,
           confirmDialogOptions,
         );
-        const confirmModalContent = modalContentTemplate(confirmDialog);
+        const confirmModalContent = generateModalContent(confirmDialog);
         const confirmModal = createElement('div', 'modal');
         showModal(confirmModal, confirmModalContent);
         this.mainContent.appendChild(confirmModal);

@@ -1,5 +1,7 @@
 import { Book, RecommendBook } from './book';
 
+export type DisplayBooksHandler = () => void;
+
 export type PageChangeHandler = (pageNumber: number) => void;
 
 export type AddBookHandler = (data: Omit<Book, 'id'>) => void;

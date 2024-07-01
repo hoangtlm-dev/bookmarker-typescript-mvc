@@ -23,13 +23,12 @@ import {
 
 // Templates
 import {
-  defaultToastOptions,
-  modalContentTemplate,
-  toastTemplate,
   generateBookDetails,
   generateConfirmDialog,
   generateSkeletonBookDetails,
   generateRequestError,
+  generateToastContent,
+  generateModalContent,
 } from '../templates';
 
 //Types
@@ -42,10 +41,12 @@ import {
   FormHandleElements,
   NavigateHomeHandler,
   ShowFormHandlers,
-  ToastOptions,
   ToastType,
   ToggleTextHandler,
 } from '@/types';
+
+// Icons
+import closeIcon from '../../assets/icons/close.svg';
 
 export default class BookDetailsView {
   private mainContent: HTMLDivElement;
@@ -61,17 +62,12 @@ export default class BookDetailsView {
     this.mainContent.innerHTML = generateRequestError(message);
   };
 
-  bindToastMessage = (type: ToastType, message: string, description: string) => {
+  bindToastMessage = (type: ToastType, message: string, description: string): void => {
     const toastContainer = createElement('div', 'toast-container');
+    const toastContent = generateToastContent(type, message, description, closeIcon);
+    showToast(toastContainer, toastContent, TOAST.DURATION_TIME);
 
-    const options: ToastOptions = {
-      ...defaultToastOptions,
-      type,
-    };
-
-    showToast(toastContainer, toastTemplate(message, description, options), TOAST.DISPLAY_TIME);
-
-    this.mainContent.appendChild(toastContainer);
+    updateDOMElement(this.mainContent, toastContainer);
   };
 
   displaySkeletonBookDetails() {
@@ -239,47 +235,28 @@ export default class BookDetailsView {
     });
   };
 
-  bindDeleteBook = (handler: DeleteBookHandler) => {
+  bindDeleteBook = (handler: DeleteBookHandler): void => {
     this.mainContent.addEventListener('click', (event) => {
-      const btnDelete = (event.target as HTMLElement).closest('.btn-delete');
+      const target = event.target as HTMLElement;
+      const btnDelete = target.closest('.btn-delete');
 
       if (btnDelete) {
         // Create and show the confirm dialog
-        const confirmDialogOptions = {
-          positiveButtonId: CONFIRM_DIALOG.POSITIVE_BUTTON_ID,
-          negativeButtonId: CONFIRM_DIALOG.NEGATIVE_BUTTON_ID,
-          positiveText: CONFIRM_DIALOG.POSITIVE_TEXT,
-          negativeText: CONFIRM_DIALOG.NEGATIVE_TEXT,
-        };
-        const confirmDialog = generateConfirmDialog(
-          CONFIRM_DIALOG.MESSAGE.DELETE_BOOK,
-          CONFIRM_DIALOG.DESCRIPTION,
-          confirmDialogOptions,
-        );
-        const confirmModalContent = modalContentTemplate(confirmDialog);
+        const confirmDialog = generateConfirmDialog(CONFIRM_DIALOG.MESSAGE.DELETE_BOOK, CONFIRM_DIALOG.DESCRIPTION);
+        const confirmModalContent = generateModalContent(confirmDialog);
         const confirmModal = createElement('div', 'modal');
         showModal(confirmModal, confirmModalContent);
-        this.mainContent.appendChild(confirmModal);
+        updateDOMElement(this.mainContent, confirmModal);
 
         // Get the positive and negative buttons from the modal
-        const positiveButton = getElement(`#${CONFIRM_DIALOG.POSITIVE_BUTTON_ID}`);
-        const negativeButton = getElement(`#${CONFIRM_DIALOG.NEGATIVE_BUTTON_ID}`);
+        const positiveButton = getElement('#btn-confirm');
+        const negativeButton = getElement('#btn-cancel');
 
         // Handling the 'OK' button click
         positiveButton.addEventListener('click', () => {
           handler(parseInt(this.bookId));
           // Remove the modal from the DOM
           this.mainContent.removeChild(confirmModal);
-
-          // Show the toast message
-          const toastContainer = createElement('div', 'toast-container');
-          showToast(
-            toastContainer,
-            toastTemplate(TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.DELETED_BOOK),
-            TOAST.DISPLAY_TIME,
-          );
-
-          this.mainContent.appendChild(toastContainer);
         });
 
         // Handling the 'Cancel' button click
