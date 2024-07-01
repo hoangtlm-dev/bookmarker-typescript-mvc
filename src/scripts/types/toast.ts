@@ -6,7 +6,7 @@ export type ToastDescription = (typeof TOAST.DESCRIPTION)[keyof typeof TOAST.DES
 
 export type ToastType = (typeof TOAST.TYPE)[keyof typeof TOAST.TYPE];
 
-export type ToastOptions = {
-  type: ToastType;
-  closeButtonId: string;
-};
+// export type ToastOptions = {
+//   type: ToastType;
+//   closeButtonId: string;
+// };

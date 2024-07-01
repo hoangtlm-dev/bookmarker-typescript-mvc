@@ -1,10 +1,14 @@
-export const generateSkeletonBookItem = () =>
+/**
+ *
+ * @returns - an HTML string that represents the skeleton book item.
+ */
+export const generateSkeletonBookItem = (): string =>
   ` <div class="book-primary-info">
       <h2 class="text-heading text-truncate book-name"></h2>
       <p class="text-description text-truncate book-description"></p>
       <div class="book-item-action">
-        <button class="btn btn-square"></button>
-        <button class="btn btn-square"></button>
+        <div class="btn btn-square"></div>
+        <div class="btn btn-square"></div>
       </div>
     </div>
     <div class="book-published-info">

@@ -42,8 +42,8 @@ export default class BookListController {
     };
   }
 
-  init = async () => {
-    await this.displayBookList();
+  init = () => {
+    this.bookListView.bindDisplayBooks(this.handleDisplayBooks);
     this.bookListView.bindPageChange(this.handlePageChange);
     this.bookListView.bindAddBook(this.addFormHandlers);
     this.bookListView.bindEditBook(this.editFormHandlers);
@@ -53,9 +53,9 @@ export default class BookListController {
     this.bookListView.bindNavigationBookDetails(this.handleNavigateBookDetails);
   };
 
-  displayBookList = async () => {
+  handleDisplayBooks = async () => {
     try {
-      this.bookListView.displaySkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
+      this.bookListView.renderSkeletonBooks(PAGINATION.ITEMS_PER_PAGE);
 
       const response = await this.bookModel.getBooks();
       const latestBooks = sortArray(response, SORT.KEY.CREATED_AT, SORT.STATUS.DESCENDING);
@@ -75,7 +75,8 @@ export default class BookListController {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     const booksRender = bookList.slice(startIndex, endIndex);
-    this.bookListView.displayBooks(bookList, booksRender, this.currentPage);
+
+    this.bookListView.renderBooks(bookList, booksRender, this.currentPage);
   };
 
   handlePageChange = (pageNumber: number) => {
@@ -86,7 +87,7 @@ export default class BookListController {
   handleAddBook = async (data: Omit<Book, 'id'>) => {
     try {
       await this.bookModel.addBook(data);
-      await this.displayBookList();
+      await this.handleDisplayBooks();
     } catch (error) {
       this.bookListView.bindToastMessage(TOAST.TYPE.FAIL, TOAST.MESSAGE.FAIL, error as string);
     }
@@ -145,7 +146,7 @@ export default class BookListController {
         break;
       }
       default: {
-        this.displayBookList();
+        this.handleDisplayBooks();
         break;
       }
     }
@@ -156,7 +157,7 @@ export default class BookListController {
   handleEditBook = async (bookId: number, bookData: Omit<Book, 'id'>) => {
     try {
       await this.bookModel.editBook(bookId, bookData);
-      this.displayBookList();
+      this.handleDisplayBooks();
 
       this.bookListView.bindToastMessage(TOAST.TYPE.SUCCESS, TOAST.MESSAGE.SUCCESS, TOAST.DESCRIPTION.EDITED_BOOK);
     } catch (error) {
