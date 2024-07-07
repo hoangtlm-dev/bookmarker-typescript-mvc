@@ -1,4 +1,5 @@
 export const ROUTES = {
   HOME: '/',
-  BOOK_DETAILS: (id: number) => `/book-details?id=${id}`,
+  BOOK_DETAILS: '/book-details',
+  NOT_FOUND: '/404',
 };

@@ -3,6 +3,10 @@
     {
       "source": "/book-details",
       "destination": "/book-details.html"
+    },
+    {
+      "source": "/not-found",
+      "destination": "/not-found.html"
     }
   ]
 }
