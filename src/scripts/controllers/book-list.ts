@@ -9,6 +9,7 @@ import BookListView from '@/views/book-list';
 
 //Utils
 import { sortArray } from '@/utils/sort-array';
+import { navigate } from '@/utils';
 
 export default class BookListController {
   private bookModel: BookModel;
@@ -68,7 +69,7 @@ export default class BookListController {
   };
 
   handleNavigateBookDetails = (bookId: number) => {
-    window.location.href = ROUTES.BOOK_DETAILS(bookId);
+    navigate(`${ROUTES.BOOK_DETAILS}?id=${bookId}`);
   };
 
   updateBookList = (bookList: Book[]) => {
